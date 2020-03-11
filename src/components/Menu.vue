@@ -1,74 +1,97 @@
 <template>
     <div class="menu">
+    <ul class="menu-main">
         <router-link to="/mark">
-            <div class="mark">
-                <h4>Отметить</h4>
-                <img src="../assets/menuIcon/mark_icon.svg" alt="mark">
-            </div>
+            <li>Отметить</li>
         </router-link>
-        <router-link to="subs">
-            <div class="subs">
-                <h4>Абонементы</h4>
-                <img src="../assets/menuIcon/sub_icon.png" alt="sub">
-            </div>
+
+        <router-link to="/subs">
+            <li>Абонементы</li>
         </router-link>
-        <router-link to="clients">
-            <div class="clients">
-                <h4>Клиенты</h4>
-                <img src="../assets/menuIcon/client_icon.png" alt="client">
-            </div>
+
+        <router-link to="/clients">
+            <li>Клиенты</li>
         </router-link>
-        <router-link to="trainers">
-            <div class="trainers">
-                <h4>Тренеры</h4>
-                <img src="../assets/menuIcon/trainer_icon.png" alt="trainer">
-            </div>
+
+        <router-link to="/trainers">
+            <li>Тренеры</li>
         </router-link>
-        <router-link to="payments">
-            <div class="payments">
-                <h4>Оплаты</h4>
-                <img src="../assets/menuIcon/payment_icon.png" alt="payment">
-            </div>
+
+        <router-link to="/payments">
+            <li>Оплаты</li>
         </router-link>
-        <router-link to="report">
-            <div class="report">
-                <h4>Отчет</h4>
-                <img src="../assets/menuIcon/report_icon.png" alt="report">
-            </div>
+
+        <router-link to="/report">
+            <li>Отчет</li>
         </router-link>
+    </ul>
     </div>
 </template>
 
 
 <style scoped>
-
-.menu {
-    width: 150px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background: #e0c3d0;
+@import url('https://fonts.googleapis.com/css?family=Ubuntu+Condensed');
+.menu-main {
+    list-style: none;
+    margin: 10px 0 0px;
+    padding: 25px 0 5px;
+    text-align: center;
+    background: #202225;
 }
 
-.menu > div {
-    border: 2px solid black; /* Белая рамка */
-    display: flex;
-    flex-grow: 1;
-    flex-direction: column;
+.menu-main li {
+    display: inline-block;
 }
 
-.menu h4 {
-    color: black;
-    margin: auto;
-    display: flex;
-    margin-block-start: 0em;
-    margin-block-end: 0em;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+.menu-main li:after {
+  content: "|";
+  color: #606060;
+  display: inline-block;
+  vertical-align:top;
 }
 
-.menu img {
-    height: 70px;
-    width: 70px;
-    margin: auto;
+.menu-main li:last-child:after {
+    content: none;
+}
+.menu-main a {
+  text-decoration: none;
+  font-family: 'Ubuntu Condensed', sans-serif;
+  letter-spacing: 2px;
+  position: relative;
+  padding-bottom: 20px;
+  margin: 0 34px 0 30px;
+  font-size: 17px;
+  text-transform: uppercase;
+  display: inline-block;
+  transition: color .2s;
+}
+.menu-main a, .menu-main a:visited {    
+    color: #adbbbe;
+}
+.menu-main a.current, .menu-main a:hover{
+    color: #ffffff;
+}
+.menu-main a:before,
+.menu-main a:after {
+  content: "";
+  position: absolute;
+  height: 4px;
+  top: auto;
+  right: 50%;
+  bottom: 3px;
+  left: 50%;
+  background: #ffffff;
+  transition: .8s;
+}
+.menu-main a:hover:before, .menu-main .current:before {left: 0;}
+.menu-main a:hover:after, .menu-main .current:after {right: 0;}   
+@media (max-width: 550px) {
+    .menu-main {padding-top: 0;}
+    .menu-main li {display: block;}
+    .menu-main li:after {content: none;}
+    .menu-main a {
+        padding: 25px 0 20px; 
+        margin: 0 30px;
+    }
 }
 </style>

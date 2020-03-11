@@ -4,18 +4,20 @@ import VueRouter from 'vue-router'
 
 import App from './App.vue'
 import Mark from './components/Mark.vue'
+import Subs from './components/Subs.vue'
 
-Vue.use(VueRouter);
-Vue.config.productionTip = false;
-Vue.prototype.$axios = axios;
+Vue.use(VueRouter)
+Vue.config.productionTip = false
+Vue.prototype.$axios = axios
 
 const routes = [
-  { path: '/mark', component: Mark }
-];
+  { path: '/mark', component: Mark },
+  { path: '/subs', component: Subs }
+]
 
 const router = new VueRouter({
   routes
-});
+})
 
 new Vue({
   render: h => h(App),
