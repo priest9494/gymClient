@@ -7,23 +7,28 @@
                 <input class="search-input" type="text" placeholder="Номер абонемента" @input="getSub" v-model="subNumber">
             </div>
         </div>
-        <div class="user-output">
-            <div>
-                <div>ФИО</div>
-                <div>Тип</div>
-                <div>Дата начала</div>
-                <div>Дата окончания</div>
-                <div>Осталось занятий</div>
-                <div>Осталось оплатить</div>
-            </div>
-            <div class="nodes">
-                <div>{{ fullName }}</div>
-                <div>{{ type }}</div>
-                <div>{{ beginDate }}</div>
-                <div>{{ endDate }}</div>
-                <div>{{ traintngLeft }}</div>
-                <div>{{ paymentLeft }}</div>
+        <div class="user-output-wrapper">
+            <div class="user-output">
+                <div>
+                    <div>ФИО</div>
+                    <div>Тип</div>
+                    <div>Дата начала</div>
+                    <div>Дата окончания</div>
+                    <div>Время начала</div>
+                    <div>Осталось занятий</div>
+                    <div>Осталось оплатить</div>
+                </div>
+                <div class="nodes">
+                    <div>{{ fullName }}</div>
+                    <div>{{ type }}</div>
+                    <div>{{ beginDate }}</div>
+                    <div>{{ endDate }}</div>
+                    <div>{{ beginTime }}</div>
+                    <div>{{ traintngLeft }}</div>
+                    <div>{{ paymentLeft }}</div>
 
+                </div>
+                <img src="../assets/clientPictureTemplate.jpg" alt="template">
             </div>
         </div>
         
@@ -56,6 +61,7 @@ export default {
             type: '',
             traintngLeft: '', 
             paymentLeft: '',
+            beginTime: '',
             isModalVisible: false,
             markBtnEnable: false
         }
@@ -90,6 +96,7 @@ export default {
             this.type = res.data.title + ' ' + res.data.training + ' занятий ' + res.data.cost + ' рублей'
             this.paymentLeft = res.data.left_to_pay
             this.traintngLeft = res.data.training_left
+            this.beginTime = res.data.start_time
 
             console.log(res.data)
         },
@@ -108,12 +115,13 @@ export default {
             this.paymentLeft = ''
             this.traintngLeft = ''
             this.subNumber = ''
+            this.beginTime = ''
         },
         convert(str) {
             var date = new Date(str),
             mnth = ("0" + (date.getMonth() + 1)).slice(-2),
             day = ("0" + date.getDate()).slice(-2);
-            return [date.getFullYear(), mnth, day].join("-");
+            return [day, mnth, date.getFullYear()].join(".");
         }
     }
 }
@@ -126,23 +134,23 @@ export default {
 .mark-frame {
     background: #2f3136;
     width: 100%;
-    height: calc(100vh - 100px);
-    color: #adbbbe;
+    height: calc(100vh - 74px);
+    color: #f3f1f1;
     font-family: 'Ubuntu Condensed', sans-serif;
 }
 
 .search-container {
-    padding-top: 30px;
+    margin-top: 15px;
 
     .search-input {
         width: 20%;
         padding: 12px 24px;
 
         transition: transform 250ms ease-in-out;
-        font-size: 18px;
+        font-size: 10px;
         line-height: 18px;
         
-        color: #adbbbe;
+        color: #ffffff;
         background-color: transparent;
  
         background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
@@ -182,56 +190,72 @@ export default {
     }
 }
 
-.user-output {
-    margin-top: 10px;
-    margin-left: 100px;
-    font-size: 30px;
+.user-output-wrapper {
     display: flex;
-    
-    div {
-        margin-bottom: 10px;
-    }
+    justify-content: center;
 
-    .nodes {
-        margin-left: 30px;
+    .user-output {
+        margin-top: 25px;
+        font-size: 19px;
+        display: flex;
+        
+        div {
+            margin-bottom: 10px;
+        }
+
+        .nodes {
+            margin-left: 50px;
+            margin-right: 20px;
+            min-width: 300px;
+        }
+
+        img {
+            height: auto;
+        }
     }
 }
 
+
 .user-buttons {
     text-align: center;
-
+    margin-top: 10px;
     button {
         outline: none;
         font-family: 'Ubuntu Condensed', sans-serif;
-        width: 300px;
-        height: 80px;
-        margin: 30px;
-        border: 2px solid rgb(0, 0, 0);
-        border-radius: 0.6em;
+        width: 200px;
+        height: 35px;
+        margin: 10px;
+        border: none;
         cursor: pointer;
-        font-size: 1.6rem;
+        font-size: 1.2rem;
         line-height: 1;
         text-transform: uppercase;
         font-weight: 400;
-        transition: all 0.3s;
+        transition: all 0.1s;
 
+        &:disabled {
+            color: black;
+        }
+
+        &:hover,
+        &:focus {
+            font-size: 1.25rem;
+        }
     }
     
     .accept-button {
-        background: rgb(51, 82, 55);
+        background: rgb(166, 250, 144);
         &:hover,
         &:focus {
-            font-size: 1.9rem;
-            background: rgb(62, 99, 67);
+            background: rgb(200, 248, 188);
         }
     }
 
     .cancel-button {
-        background: rgb(82, 51, 51);
+        background: rgb(248, 128, 128);
         &:hover,
         &:focus {
-            font-size: 1.9rem;
-            background: rgb(94, 59, 59);
+            background: rgb(252, 169, 169);
         }
     }
         

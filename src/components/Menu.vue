@@ -37,6 +37,7 @@
     padding: 25px 0 5px;
     text-align: center;
     background: #202225;
+    margin-block-start: 0em;
 }
 
 .menu-main li {
@@ -59,7 +60,7 @@
   letter-spacing: 2px;
   position: relative;
   padding-bottom: 20px;
-  margin: 0 34px 0 30px;
+  margin: 0 30px 0 30px;
   font-size: 17px;
   text-transform: uppercase;
   display: inline-block;
@@ -72,17 +73,7 @@
     color: #ffffff;
 }
 .menu-main a:before,
-.menu-main a:after {
-  content: "";
-  position: absolute;
-  height: 4px;
-  top: auto;
-  right: 50%;
-  bottom: 3px;
-  left: 50%;
-  background: #ffffff;
-  transition: .8s;
-}
+
 .menu-main a:hover:before, .menu-main .current:before {left: 0;}
 .menu-main a:hover:after, .menu-main .current:after {right: 0;}   
 @media (max-width: 550px) {
