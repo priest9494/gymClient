@@ -1,31 +1,32 @@
 <template>
-    <div class="sub-types-frame">
+    <div class="trainers-frame">
         <div class="user-input">
             <div class="search-container">
                 <input class="search-input" type="text" placeholder="ФИО" v-model="userInput" @input="search">
             </div>
         </div>
 
-        <div class="sub-list">
+        <div class="trainer-list">
             <div class="search-result">
                 <div v-for="k in 2" :key="k">
-                    {{ gridColumns[k - 1] }}
+                    {{ gridColumns[k] }}
                 </div>
             </div>
-            <div class="search-result" v-for="(item, idx) in subTypesList" :key="idx" @click="onRowClicked(idx)">
+            <div class="search-result" v-for="(item, idx) in trainersList" :key="idx" @click="onRowClicked(idx)">
                 <div v-for="k in 2" :key="k">
-                    {{ Object.values(item)[k - 1] }}
+                    {{ Object.values(item)[k] }}
                 </div>
             </div>
         </div>
 
         <div class="button-wrapper">
-            <button class="add-sub-type">Добавить тренера</button>
+            <button class="add-trainer" @click="addTrainer">Добавить тренера</button>
         </div>
 
         <trainersModal
         v-bind:gridRows="gridColumns"
         v-bind:gridNodes="modalInfo"
+        v-bind:isAddOperation="isAddOperation"
         v-show="modalShow"
         @modalClose="modalClose"
         />
@@ -45,39 +46,51 @@ export default {
     data() {
         return {
             gridColumns: [
+                'id',
                 'ФИО',
                 'Дата рождения'
             ],
-            subTypesList: [],
+            trainersList: [],
             userInput: '',
             modalShow: false,
-            modalInfo: []
+            modalInfo: [],
+            isAddOperation: false
         }
     },
     methods: {
         modalClose() {
             this.modalShow = false;
+            this.search()
         },
         async search() {
             let res
-        
+            this.trainersList = [];
+
             res = await this.$axios.post('http://localhost:3000/v1/trainers/findByFio', {
                 fio: this.userInput
             })
 
-            console.log(res);
-            this.subTypesList = [];
-
             res.data.forEach(element => {
-                this.subTypesList.push({
+                this.trainersList.push({
+                    id: element.id,
                     fio: element.fio,
                     dateBirth: this.convert(element.date_birth)
                 })
             });
         },
+        async addTrainer() {
+            this.modalShow = true
+            this.isAddOperation = true
+            this.modalInfo = {
+                id: '',
+                fio: '',
+                dateBirth: ''
+            }
+        },
         onRowClicked(idx) {
-            this.modalShow = true;
-            this.modalInfo = this.subTypesList[idx];
+            this.isAddOperation = false
+            this.modalShow = true
+            this.modalInfo = this.trainersList[idx]
         },
         convert(str) {
             var date = new Date(str),
@@ -90,7 +103,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.sub-types-frame {
+.trainers-frame {
     width: 100%;
     height: calc(100vh - 74px);
     background: #2f3136;
@@ -143,7 +156,7 @@ export default {
         }
     }
 
-    .sub-list {
+    .trainer-list {
         background: #27282c;
         width: 95%;
         max-height: 55%;
@@ -170,7 +183,7 @@ export default {
         text-align: center;
         margin-top: 10px;
 
-        .add-sub-type {
+        .add-trainer {
             padding: 20px;
             background: #575756;
             outline: none;

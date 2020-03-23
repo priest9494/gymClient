@@ -2,19 +2,22 @@
     <div class="info-frame">
         <div class="info-wrapper">
             <div class="static-info-rows">
-                <div v-for="row in gridRows" :key="row"> {{ row }}</div>
+                <div v-for="k in 2" :key="k">{{ gridRows[k] }}</div>
             </div>
             <div class="dynamic-info-rows">
-                <div class="input-wrapper" :class="{'bordered': isEditable}" v-for="row in gridNodes" :key="row">
-                    <input type="text" :value="row" :disabled="!isEditable">
-                </div>
+                <input class="user-input" :class="{ 'bordered': isEditable || isAddOperation }" type="text" v-model="gridNodes.fio" :disabled="!(isEditable || isAddOperation)">
+                <input class="user-input" :class="{ 'bordered': isEditable || isAddOperation }" type="text" v-model="gridNodes.dateBirth" :disabled="!(isEditable || isAddOperation)">
             </div>
             <div class="close-button" @click="close">x</div>
         </div>
         
-        <div class="button-wrapper">
-                <button class="change-button" @click="editSubType">{{ isEditable ? 'Применить' : 'Изменить' }}</button>
-                <button class="remove-button">Удалить</button>
+        <div class="edit-button-wrapper" v-if="!isAddOperation">
+            <button class="change-button" @click="editTrainer">{{ isEditable ? 'Применить' : 'Изменить' }}</button>
+            <button class="remove-button" @click="removeTrainer">Удалить</button>
+        </div>
+
+        <div class="add-button-wrapper" v-if="isAddOperation">
+            <button class="add-button" @click="addTrainer"> Добавить </button>
         </div>
     </div>
 </template>
@@ -25,22 +28,74 @@ export default {
     name: 'get-full-info-modal',
     props: {
         gridRows: Array,
-        gridNodes: Object
+        gridNodes: Array,
+        isAddOperation: Boolean
     },
     data() {
         return {
-            isEditable: false
+            isEditable: false,
         }
     },
     methods: {
         close() {
             this.$emit('modalClose')
         },
-        editSubType() {
+        async editTrainer() {
             if (this.isEditable) {
-                console.log('Сохранено')
+                if(!this.validate()) {
+                    return;
+                }
+
+                var parms = this.gridNodes.dateBirth.split(/[./-]/);
+                var postDate = new Date(parms[2], parms[1] - 1, parseInt(parms[0]) + 1);
+
+                await this.$axios.post('http://localhost:3000/v1/trainers/edit', {
+                    id: this.gridNodes.id,
+                    fio: this.gridNodes.fio,
+                    bdate: postDate
+                })
+
             }
             this.isEditable = !this.isEditable
+        },
+        async removeTrainer() {
+            await this.$axios.get('http://localhost:3000/v1/trainers/remove/' + this.gridNodes.id)
+            this.$emit('modalClose')
+        },
+        async addTrainer() {
+            if(!this.validate()) {
+                return;
+            }
+            var parms = this.gridNodes.dateBirth.split(/[./-]/);
+            var postDate = new Date(parms[2], parms[1] - 1, parseInt(parms[0]) + 1);
+
+            await this.$axios.post('http://localhost:3000/v1/trainers/add', {
+                fio: this.gridNodes.fio,
+                bdate: postDate
+            })
+
+            this.$emit('modalClose')
+        },
+        validate() {
+            var isCorrect = true
+
+            if(this.gridNodes.fio.length === 0) {
+                alert('Введите ФИО')
+                isCorrect = false
+            }
+
+            if(this.gridNodes.fio.length > 100) {
+                alert('Слишком длинное ФИО')
+                isCorrect = false
+            }   
+
+            var dateReg = /^\d{2}[./-]\d{2}[./-]\d{4}$/
+            if(this.gridNodes.dateBirth.match(dateReg) === null) {
+                alert('Дата не соответствует формату (дд.мм.гггг)')
+                isCorrect = false
+            }
+
+            return isCorrect
         }
     }
 }
@@ -67,8 +122,10 @@ export default {
 
         .static-info-rows {
             margin: 10px 0px 0px 50px;
-
+            
             div {
+                display: flex;
+                align-items: center;
                 margin-top: 10px;
                 height: 30px;
                 font-size: 12px;
@@ -79,12 +136,12 @@ export default {
             margin: 10px 0px 0px 15px;
             display: flex;
             flex-direction: column;
-            .input-wrapper {
+            .user-input {
                 color:white;
                 background: rgba(178, 34, 34, 0);
                 height: 30px;
-                margin-top: 8px;
-
+                margin-top: 10px;
+                
                 &.bordered {
                     border: 1px solid white;
                     margin-top: 8px;
@@ -109,7 +166,8 @@ export default {
             cursor: pointer;
         }
     }
-    .button-wrapper {
+    .edit-button-wrapper, 
+    .add-button-wrapper {
         display: flex;
         justify-content: space-around;
         margin-bottom: 10px;

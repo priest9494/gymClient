@@ -9,23 +9,24 @@
         <div class="sub-list">
             <div class="search-result">
                 <div v-for="k in 3" :key="k">
-                    {{ gridColumns[k - 1] }}
+                    {{ gridColumns[k] }}
                 </div>
             </div>
             <div class="search-result" v-for="(item, idx) in subTypesList" :key="idx" @click="onRowClicked(idx)">
                 <div v-for="k in 3" :key="k">
-                    {{ Object.values(item)[k - 1] }}
+                    {{ Object.values(item)[k] }}
                 </div>
             </div>
         </div>
 
         <div class="button-wrapper">
-            <button class="add-sub-type">Добавить вид абонемента</button>
+            <button class="add-sub-type" @click="addSubType">Добавить вид абонемента</button>
         </div>
 
         <subTypesModal
         v-bind:gridRows="gridColumns"
         v-bind:gridNodes="modalInfo"
+        v-bind:isAddOperation="isAddOperation"
         v-show="modalShow"
         @modalClose="modalClose"
         />
@@ -45,6 +46,7 @@ export default {
     data() {
         return {
             gridColumns: [
+                'id',
                 'Наименование',
                 'Цена',
                 'Количество занятий'
@@ -52,12 +54,14 @@ export default {
             subTypesList: [],
             userInput: '',
             modalShow: false,
-            modalInfo: []
+            modalInfo: [],
+            isAddOperation: false
         }
     },
     methods: {
         modalClose() {
             this.modalShow = false;
+            this.search()
         },
         async search() {
             let res
@@ -71,6 +75,7 @@ export default {
 
             res.data.forEach(element => {
                 this.subTypesList.push({
+                    id: element.id,
                     title: element.title,
                     cost: element.cost,
                     training: element.training,
@@ -78,8 +83,19 @@ export default {
             });
         },
         onRowClicked(idx) {
+            this.isAddOperation = false
             this.modalShow = true;
             this.modalInfo = this.subTypesList[idx];
+        },
+        addSubType() {
+            this.modalShow = true
+            this.isAddOperation = true
+            this.modalInfo = {
+                id: '',
+                title: '',
+                cost: '',
+                training: ''
+            }
         }
     }
 }

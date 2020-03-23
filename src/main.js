@@ -7,6 +7,7 @@ import Mark from './components/Mark.vue'
 import Subs from './components/Subs.vue'
 import SubTypes from './components/SubTypes.vue'
 import Trainers from './components/Trainers.vue'
+import Clients from './components/Clients.vue'
 
 Vue.use(VueRouter)
 Vue.config.productionTip = false
@@ -16,6 +17,7 @@ const routes = [
   { path: '/mark', component: Mark },
   { path: '/subs', component: Subs },
   { path: '/subTypes', component: SubTypes },
+  { path: '/clients', component: Clients },
   { path: '/trainers', component: Trainers }
 ]
 

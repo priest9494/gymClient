@@ -1,42 +1,36 @@
 <template>
-    <div class="subs-frame">
+    <div class="clients-frame">
 
         <div class="user-input">
             <div class="search-container">
                 <input class="search-input" type="text" :placeholder="searchCriterion" v-model="userInput" @input="search">
             </div>
             <select class="criterion-select" v-model="searchCriterion" @change="changeCriterion">
-                <option :selected="true">Номер абонемента</option>
-                <option>ФИО</option>
+                <option :selected="true">ФИО</option>
                 <option>Номер телефона</option>
             </select>
         </div>
         
         <div class="sub-list">
             <div class="search-result">
-                <div v-for="k in 3" :key="k">
-                    {{ gridColumns[k - 1] }}
+                <div v-for="k in 2" :key="k">
+                    {{ gridColumns[k] }}
                 </div>
             </div>
             <div class="search-result" v-for="(item, idx) in subList" :key="idx" @click="onRowClicked(idx)">
-                <div v-for="k in 3" :key="k">
-                    {{ Object.values(item)[k - 1] }}
+                <div v-for="k in 2" :key="k">
+                    {{ Object.values(item)[k] }}
                 </div>
             </div>
         </div>
         <div class="add-sub-wrapper">
-            <button class="add-sub">Добавить абонемент</button>
+            <button class="add-sub" @click="addClient">Добавить клиента</button>
         </div>
 
-        <div class="goto-sub-types-wrapper">
-            <router-link to="/subTypes">
-                <button class="goto-sub-types">В раздел "Виды абонементов"</button>
-            </router-link>
-        </div>
-        
         <subModal
         v-bind:gridRows="gridColumns"
         v-bind:gridNodes="modalInfo"
+        v-bind:isAddOperation="isAddOperation"
         v-show="modalShow"
         @modalClose="modalClose"
         />
@@ -44,7 +38,7 @@
 </template>
 
 <script>
-import subModal from './modals/subModal'
+import subModal from './modals/clientsModal'
 
 export default {
     components: {
@@ -52,68 +46,80 @@ export default {
     },
     data() {
         return {
-            searchCriterion: 'Номер абонемента',
+            searchCriterion: 'ФИО',
             gridColumns: [
-                "Номер абонемента",
+                "id",
                 "ФИО",
                 "Номер телефона",
-                "Вид абонемента",
-                "Тренер",
-                "Дата начала",
-                "Дата окончания",
-                "Время начала",
-                "Осталось занятий",
-                "Осталось оплатить",
+                "Дата первого визита",
+                "Откуда узнали",
+                "Телефон пригласившего",
                 "Примечание"
             ],
             userInput: '',
             subList: [],
             modalShow: false,
-            modalInfo: []
+            modalInfo: [],
+            isAddOperation: false
         }
     },
     methods: {
+        addClient() {
+            this.modalShow = true
+            this.isAddOperation = true
+            this.modalInfo = {
+                id: '',
+                fio: '',
+                phoneNum: '',
+                firstVisitDate: '',
+                howToFind: '',
+                inviterPhone: '',
+                note: ''
+            }
+        },
         onRowClicked(idx) {
-            this.modalShow = true;
-            this.modalInfo = this.subList[idx];
+            this.modalShow = true
+            this.modalInfo = this.subList[idx]
+            this.isAddOperation = false
         },
         async search() {
             let res
+            this.subList = []
 
-            this.subList = [];
-
-            if(this.userInput.length === 0) {
-                return
-            }
-
-            if(this.searchCriterion === 'Номер абонемента') {
-                res = await this.$axios.post('http://localhost:3000/v1/subs/getSubBySubNumber', {
-                    sub_number: this.userInput
-                })
-            } else if(this.searchCriterion === 'ФИО') {
-                res = await this.$axios.post('http://localhost:3000/v1/subs/getSubByFio', {
+            if(this.searchCriterion === 'ФИО' && this.userInput.length !== 0) {
+                res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByFio', {
                     fio: this.userInput
                 })
-            } else {
-                res = await this.$axios.post('http://localhost:3000/v1/subs/getSubByPhoneNumber', {
+            } else if(this.userInput.length !== 0){
+                res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByPhoneNumber', {
                     phone_number: this.userInput
                 })
+            } else {
+                return
             }
 
             res.data.forEach(element => {
                 this.subList.push({
-                    subN: element.sub_number,
-                    fio: element.client_fio,
+                    id: element.id,
+                    fio: element.fio,
                     phoneNum: element.phone_number,
-                    type: element.title + ' ' + element.training + ' занятий ' + element.cost + ' рублей',
-                    trainer: element.trainer_fio,
-                    begDate: this.convert(element.begin_date),
-                    endDate: this.convert(element.end_date),
-                    begTime: element.start_time,
-                    trainLeft: element.training_left,
-                    payLeft: element.left_to_pay,
+                    firstVisitDate: this.convert(element.first_visit_date),
+                    howToFind: element.how_to_find,
+                    inviterPhone: element.inviter_phone,
                     note: element.note
                 })
+            });
+
+            this.subList.forEach(element => {
+                if(element.inviterPhone == null) {
+                    element.inviterPhone = 'не указано'
+                }
+                if(element.note == null) {
+                    element.note = 'не указано'
+                }
+                if(element.howToFind  == null) {
+                    element.howToFind  = 'не указано'
+                }
             });
         },
         changeCriterion() {
@@ -121,13 +127,13 @@ export default {
             this.subList = []
         },
         modalClose() {
-            this.modalShow = false;
+            this.modalShow = false
         },
         convert(str) {
             var date = new Date(str),
             mnth = ("0" + (date.getMonth() + 1)).slice(-2),
             day = ("0" + date.getDate()).slice(-2);
-            return [day, mnth, date.getFullYear()].join(".");
+            return [day, mnth, date.getFullYear()].join(".")
         }
     }
 }
@@ -137,7 +143,7 @@ export default {
 @import url('https://fonts.googleapis.com/css?family=Raleway:400,700,900');
 @import url('https://fonts.googleapis.com/css?family=Ubuntu+Condensed');
 
-.subs-frame {
+.clients-frame {
     width: 100%;
     height: calc(100vh - 74px);
     background: #2f3136;
@@ -217,7 +223,7 @@ export default {
 
         .search-result {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             &>div {
                 padding: 5px 10px;
                 border: 1px solid black;
