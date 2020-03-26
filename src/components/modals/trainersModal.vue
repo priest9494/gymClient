@@ -82,9 +82,7 @@ export default {
             if(this.gridNodes.fio.length === 0) {
                 alert('Введите ФИО')
                 isCorrect = false
-            }
-
-            if(this.gridNodes.fio.length > 100) {
+            } else if(this.gridNodes.fio.length > 100) {
                 alert('Слишком длинное ФИО')
                 isCorrect = false
             }   

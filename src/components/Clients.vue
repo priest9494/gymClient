@@ -59,7 +59,7 @@ export default {
             userInput: '',
             subList: [],
             modalShow: false,
-            modalInfo: [],
+            modalInfo: {},
             isAddOperation: false
         }
     },
@@ -71,7 +71,7 @@ export default {
                 id: '',
                 fio: '',
                 phoneNum: '',
-                firstVisitDate: '',
+                firstVisitDate: this.convert(new Date()),
                 howToFind: '',
                 inviterPhone: '',
                 note: ''
