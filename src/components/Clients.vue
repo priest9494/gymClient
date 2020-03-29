@@ -1,6 +1,5 @@
 <template>
     <div class="clients-frame">
-
         <div class="user-input">
             <div class="search-container">
                 <input class="search-input" type="text" :placeholder="searchCriterion" v-model="userInput" @input="search">
@@ -23,6 +22,7 @@
                 </div>
             </div>
         </div>
+
         <div class="add-sub-wrapper">
             <button class="add-sub" @click="addClient">Добавить клиента</button>
         </div>
@@ -30,7 +30,6 @@
         <subModal
         v-bind:gridRows="gridColumns"
         v-bind:gridNodes="modalInfo"
-        v-bind:isAddOperation="isAddOperation"
         v-show="modalShow"
         @modalClose="modalClose"
         />
@@ -39,6 +38,7 @@
 
 <script>
 import subModal from './modals/clientsModal'
+import { mapGetters } from 'vuex'
 
 export default {
     components: {
@@ -59,14 +59,20 @@ export default {
             userInput: '',
             subList: [],
             modalShow: false,
-            modalInfo: {},
-            isAddOperation: false
+            modalInfo: {}
         }
+    },
+    computed: {
+        ...mapGetters({
+            pictureFromDatabase: 'clientsFrame/pictureFromDatabase'
+        })
     },
     methods: {
         addClient() {
+            this.$store.commit('clientsFrame/setIsAddOperation', true)
+            this.$store.commit('clientsFrame/setIsPictureTaken', false)
+
             this.modalShow = true
-            this.isAddOperation = true
             this.modalInfo = {
                 id: '',
                 fio: '',
@@ -78,9 +84,33 @@ export default {
             }
         },
         onRowClicked(idx) {
+            this.$store.commit('clientsFrame/setIsPictureTaken', true)
+            this.$store.commit('clientsFrame/setIsAddOperation', false)
+            this.$store.commit('clientsFrame/setIsEditOperation', false)
+
+            if(this.subList[idx].photo) {
+                let ratio = (window.innerHeight < window.innerWidth) ? 16/9 : 9/16
+                const picture = document.querySelector('canvas')
+
+                picture.width = (window.innerHeight < 1280) ? window.innerWidth : 1280
+                picture.height = window.innerWidth / ratio
+
+                const ctx = picture.getContext('2d')
+                ctx.imageSmoothingEnabled = true
+                ctx.imageSmoothingQuality = 'high'
+
+                this.$store.commit('clientsFrame/setPictureFromDatabase', "data:image/png;base64," + this.subList[idx].photo)
+                //this.clientPhoto =  "data:image/png;base64," + this.subList[idx].photo
+                
+                var image = new Image();
+                image.onload = function() {
+                    ctx.drawImage(image, 0, 0, picture.width, picture.height);
+                };
+                image.src = this.pictureFromDatabase
+            }
+
             this.modalShow = true
             this.modalInfo = this.subList[idx]
-            this.isAddOperation = false
         },
         async search() {
             let res
@@ -106,7 +136,8 @@ export default {
                     firstVisitDate: this.convert(element.first_visit_date),
                     howToFind: element.how_to_find,
                     inviterPhone: element.inviter_phone,
-                    note: element.note
+                    note: element.note,
+                    photo: element.photo
                 })
             });
 
@@ -128,6 +159,7 @@ export default {
         },
         modalClose() {
             this.modalShow = false
+            this.search()
         },
         convert(str) {
             var date = new Date(str),

@@ -1,13 +1,16 @@
 <script>
   export default {
     name: 'modal',
+    props: {
+      questionString: String
+    },
     methods: {
       closeWithoutAgree() {
-        this.$emit('DisagreeClose')
+        this.$emit('disagreeClose')
 
       },
       closeWithAgree() {
-        this.$emit('AgreeClose')
+        this.$emit('agreeClose')
       },
     },
 };
@@ -26,7 +29,7 @@
           id="modalTitle"
         >
           <slot name="header">
-            Отметить посещение?
+            {{ questionString }}
           </slot>
         </header>
         <section
@@ -60,6 +63,7 @@
 
 <style>
   .modal-backdrop {
+    z-index: 3;
     position: fixed;
     top: 0;
     bottom: 0;

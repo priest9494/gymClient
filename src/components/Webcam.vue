@@ -1,21 +1,33 @@
 <template>
     <div class="camera-frame">
-        <video autoplay class="feed" v-show="!isPictureTaken"></video>
-        <canvas v-show="isPictureTaken"></canvas>
-        <button class="snap-button" @click="takePicture">{{ isPictureTaken ? 'Отменить' : 'Сделать снимок' }}</button>
+        <video autoplay class="feed" v-show="isVideoShow"></video>
+        <canvas v-show="!isVideoShow"></canvas>
+        <button 
+        v-if="isAddOperation || isEditOperation" 
+        class="snap-button" 
+        @click="takePicture">
+            {{ isPictureTaken ? 'Отменить' : 'Сделать снимок' }}
+        </button>
     </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
     name: 'camera',
     props: {
-        isPictureTaken: Boolean
+        videoContent: String
+    },
+    computed: {
+        ...mapGetters({
+            isAddOperation: 'clientsFrame/isAddOperation',
+            isEditOperation: 'clientsFrame/isEditOperation',
+            isPictureTaken: 'clientsFrame/isPictureTaken',
+            isVideoShow: 'clientsFrame/isVideoShow'
+        })
     },
     methods: {
-        changePictureTakenState() {
-            this.$emit('changePictureState')
-        },
         init() {
             if('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
                 let constrains = {
@@ -32,6 +44,7 @@ export default {
                         }
                     }
                 }
+
                 navigator.mediaDevices.getUserMedia(constrains).then(stream => {
                     const videoPlayer = document.querySelector('video')
                     videoPlayer.srcObject = stream
@@ -52,18 +65,20 @@ export default {
                 const ctx = picture.getContext('2d')
                 ctx.imageSmoothingEnabled = true
                 ctx.imageSmoothingQuality = 'high'
-    
+
                 ctx.drawImage(document.querySelector('video'), 0, 0, picture.width, picture.height)
 
-                this.$emit('takePictureClicked', picture.toDataURL())
+                this.$store.commit('clientsFrame/setClientPhoto', picture.toDataURL())
+                //this.$emit('takePictureClicked', picture.toDataURL())
             } else {
-                this.$emit('takePictureClicked', [])
+                this.$store.commit('clientsFrame/setClientPhoto', '')
+                //this.$emit('takePictureClicked', '')
             }
             
-            this.changePictureTakenState()
+            this.$store.commit('clientsFrame/setIsPictureTaken', !this.isPictureTaken)
         }
     },
-    beforeMount() {
+    created() {
         this.init();
     }
 }

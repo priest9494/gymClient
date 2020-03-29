@@ -6,20 +6,16 @@
                 <div v-for="k in 6" :key="k">{{ gridRows[k] }}</div>
             </div>
             <div class="dynamic-info-rows">
-                <input class="user-input" :class="{ 'bordered': isEditable || isAddOperation }" type="text" v-model="gridNodes.fio" :disabled="!(isEditable || isAddOperation)">
-                <input class="user-input" :class="{ 'bordered': isEditable || isAddOperation }" type="text" v-model="gridNodes.phoneNum" :disabled="!(isEditable || isAddOperation)">
-                <input class="user-input" :class="{ 'bordered': isEditable || isAddOperation }" type="text" v-model="gridNodes.firstVisitDate" :disabled="!(isEditable || isAddOperation)">
-                <input class="user-input" :class="{ 'bordered': isEditable || isAddOperation }" type="text" v-model="gridNodes.howToFind" :disabled="!(isEditable || isAddOperation)">
-                <input class="user-input" :class="{ 'bordered': isEditable || isAddOperation }" type="text" v-model="gridNodes.inviterPhone" :disabled="!(isEditable || isAddOperation)">
-                <input class="user-input" :class="{ 'bordered': isEditable || isAddOperation }" type="text" v-model="gridNodes.note" :disabled="!(isEditable || isAddOperation)">
+                <input class="user-input" :class="{ 'bordered': isEditOperation || isAddOperation }" type="text" v-model="gridNodes.fio" :disabled="!(isEditOperation || isAddOperation)">
+                <input class="user-input" :class="{ 'bordered': isEditOperation || isAddOperation }" type="text" v-model="gridNodes.phoneNum" :disabled="!(isEditOperation || isAddOperation)">
+                <input class="user-input" :class="{ 'bordered': isEditOperation || isAddOperation }" type="text" v-model="gridNodes.firstVisitDate" :disabled="!(isEditOperation || isAddOperation)">
+                <input class="user-input" :class="{ 'bordered': isEditOperation || isAddOperation }" type="text" v-model="gridNodes.howToFind" :disabled="!(isEditOperation || isAddOperation)">
+                <input class="user-input" :class="{ 'bordered': isEditOperation || isAddOperation }" type="text" v-model="gridNodes.inviterPhone" :disabled="!(isEditOperation || isAddOperation)">
+                <input class="user-input" :class="{ 'bordered': isEditOperation || isAddOperation }" type="text" v-model="gridNodes.note" :disabled="!(isEditOperation || isAddOperation)">
             </div>
-            <img src="../../assets/clientPictureTemplate.jpg" alt="template" v-if="!isAddOperation">
             <camera 
             class="camera"
-            v-if="isAddOperation"
-            @changePictureState="changePictureState"
-            v-bind:isPictureTaken="isPictureTaken"
-            @takePictureClicked="takePictureClicked"
+            v-bind:videoContent="gridNodes.photo"
             />
             
         </div>
@@ -27,62 +23,90 @@
             <button class="add-button" @click="addClient">Добавить</button>
         </div>
         <div class="edit-buttons-wrapper" v-if="!isAddOperation">
-            <button class="change-button" @click="editClient">{{ isEditable ? 'Применить' : 'Изменить' }}</button>
-            <button class="remove-button">Удалить</button>
+            <button class="change-button" @click="editClient">{{ isEditOperation ? 'Применить' : 'Изменить' }}</button>
+            <button class="remove-button" @click="removeClientClicked">Удалить</button>
         </div>
+        <confirmModal
+            v-show="confirmVisible"
+            @agreeClose="removeClient"
+            @disagreeClose="confirmVisible = false"
+            v-bind:questionString="'Удалить клиента?'"
+        />
     </div>
 </template>
 
 <script>
 import camera from '../Webcam'
+import confirmModal from '../modals/confirmModal'
+import { mapGetters } from 'vuex'
 
 export default {
     components: {
-        camera
+        camera,
+        confirmModal
     },
     name: 'get-full-info-modal',
     props: {
         gridRows: Array,
-        gridNodes: Object,
-        isAddOperation: Boolean
+        gridNodes: Object
     },
     data() {
         return {
-            isEditable: false,
-            clientPhoto: [],
-            isPictureTaken: false
+            confirmVisible: false
         }
     },
+    computed: {
+        ...mapGetters({
+            isAddOperation: 'clientsFrame/isAddOperation',
+            isEditOperation: 'clientsFrame/isEditOperation',
+            pictureFromDatabase: 'clientsFrame/pictureFromDatabase',
+            clientPhoto: 'clientsFrame/clientPhoto'
+        })
+    },
     methods: {
-        changePictureState() {
-            this.isPictureTaken = !this.isPictureTaken
-        },
-        editClient() {
-            if (this.isEditable) {
-                console.log('saved')
+        async editClient() {
+            if (this.isEditOperation) {
+                if(!this.validate()) {
+                    return
+                }
+                this.fillSpaces()
+
+                var parms = this.gridNodes.firstVisitDate.split(/[./-]/);
+                var postDate = new Date(parms[2], parms[1] - 1, parseInt(parms[0]) + 1);
+                
+                // Отправляем пустую строку заместо фото, чтобы повторно не пересылать полученное фото
+                var photoSender = this.clientPhoto ? this.clientPhoto : ''
+
+                console.log(photoSender)
+
+                await this.$axios.post('http://localhost:3000/v1/clients/edit', {
+                    id: this.gridNodes.id,
+                    fio: this.gridNodes.fio,
+                    phone: this.gridNodes.phoneNum,
+                    first_visit_date: postDate,
+                    how_find: this.gridNodes.howToFind,
+                    inv_phone: this.gridNodes.inviterPhone,
+                    note: this.gridNodes.note,
+                    photo: photoSender
+                })
+
+                this.$store.commit('clientsFrame/setIsPictureTaken', false)
+                this.$emit('modalClose');
+            } else {
+                this.$store.commit('clientsFrame/setIsPictureTaken', true)
             }
-            this.isEditable = !this.isEditable
+            this.$store.commit('clientsFrame/setIsEditOperation', !this.isEditOperation)
         },
         close() {
-            this.isPictureTaken = false
+            this.$store.commit('clientsFrame/setIsEditOperation', false)
+            this.$store.commit('clientsFrame/setIsPictureTaken', false)
             this.$emit('modalClose');
         },
         async addClient() {
             if(!this.validate()) {
                 return
             }
-
-            if(this.gridNodes.howToFind.length === 0) {
-                this.gridNodes.howToFind = '-'
-            }
-
-            if(this.gridNodes.inviterPhone.length === 0) {
-                this.gridNodes.inviterPhone = '-'
-            }
-
-            if(this.gridNodes.note.length === 0) {
-                this.gridNodes.note = '-'
-            }
+            this.fillSpaces()
 
             var parms = this.gridNodes.firstVisitDate.split(/[./-]/);
             var postDate = new Date(parms[2], parms[1] - 1, parseInt(parms[0]) + 1);
@@ -96,9 +120,17 @@ export default {
                 note: this.gridNodes.note,
                 photo: this.clientPhoto
             })
-            this.isPictureTaken = false
+            this.$store.commit('clientsFrame/setIsPictureTaken', false)
 
             this.$emit('modalClose');
+        },
+        removeClientClicked() {
+            this.confirmVisible = true
+        },
+        async removeClient() {
+            this.confirmVisible = false
+            await this.$axios.get('http://localhost:3000/v1/clients/remove/' + this.gridNodes.id)
+            this.$emit('modalClose')
         },
         validate() {
             var isCorrect = true
@@ -120,7 +152,7 @@ export default {
                 isCorrect = false
             }
 
-            if(this.clientPhoto.length === 0) {
+            if(!this.clientPhoto.length && !this.pictureFromDatabase) {
                 alertString += '• Сделаейте снимок\n'
                 isCorrect = false
             }
@@ -151,9 +183,18 @@ export default {
             }
             return isCorrect
         },
-        takePictureClicked(clientPhoto) {
-            this.clientPhoto = clientPhoto
-            console.log(this.clientPhoto)
+        fillSpaces() {
+            if(this.gridNodes.howToFind.length === 0) {
+                this.gridNodes.howToFind = '-'
+            }
+
+            if(this.gridNodes.inviterPhone.length === 0) {
+                this.gridNodes.inviterPhone = '-'
+            }
+
+            if(this.gridNodes.note.length === 0) {
+                this.gridNodes.note = '-'
+            }
         }
     }
 }

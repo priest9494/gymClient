@@ -9,7 +9,10 @@ import SubTypes from './components/SubTypes.vue'
 import Trainers from './components/Trainers.vue'
 import Clients from './components/Clients.vue'
 
+import {store} from './store';
+
 Vue.use(VueRouter)
+
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios
 
@@ -28,6 +31,7 @@ const router = new VueRouter({
 router.replace({ path: '/mark', redirect: '#' })
 
 new Vue({
-  render: h => h(App),
-  router
+  store,
+  router,
+  render: h => h(App)
 }).$mount('#app')
