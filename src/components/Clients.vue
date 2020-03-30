@@ -12,13 +12,22 @@
         
         <div class="sub-list">
             <div class="search-result">
-                <div v-for="k in 2" :key="k">
-                    {{ gridColumns[k] }}
+                <div
+                class="search-result-header"
+                v-for="item in gridColumnsToShow"
+                :key="item">
+                    {{ item }}
                 </div>
             </div>
-            <div class="search-result" v-for="(item, idx) in subList" :key="idx" @click="onRowClicked(idx)">
-                <div v-for="k in 2" :key="k">
-                    {{ Object.values(item)[k] }}
+            <div 
+            class="search-result"
+            v-for="(node, idx) in subListToShow"
+            :key="idx"
+            @click="onRowClicked(idx)">
+                <div 
+                v-for="value in node"
+                :key="value">
+                    {{ value }}
                 </div>
             </div>
         </div>
@@ -65,7 +74,26 @@ export default {
     computed: {
         ...mapGetters({
             pictureFromDatabase: 'clientsFrame/pictureFromDatabase'
-        })
+        }),
+        gridColumnsToShow: function() {
+            return this.gridColumns.filter(function(item) {
+                return item === 'ФИО' || item === 'Номер телефона'
+            })
+        },
+        subListToShow: function() {
+            var newList = []
+            this.subList.forEach(node => {
+                newList.push({
+                    fio: node.fio,
+                    phoneNum: node.phoneNum
+                })
+            });
+
+            return newList
+        }
+    },
+    created() {
+        this.search()
     },
     methods: {
         addClient() {
@@ -87,28 +115,24 @@ export default {
             this.$store.commit('clientsFrame/setIsPictureTaken', true)
             this.$store.commit('clientsFrame/setIsAddOperation', false)
             this.$store.commit('clientsFrame/setIsEditOperation', false)
+            this.$store.commit('clientsFrame/setPictureFromDatabase', "data:image/png;base64," + this.subList[idx].photo)
+            
+            let ratio = (window.innerHeight < window.innerWidth) ? 16/9 : 9/16
+            const picture = document.querySelector('canvas')
 
-            if(this.subList[idx].photo) {
-                let ratio = (window.innerHeight < window.innerWidth) ? 16/9 : 9/16
-                const picture = document.querySelector('canvas')
+            picture.width = (window.innerHeight < 1280) ? window.innerWidth : 1280
+            picture.height = window.innerWidth / ratio
 
-                picture.width = (window.innerHeight < 1280) ? window.innerWidth : 1280
-                picture.height = window.innerWidth / ratio
+            const ctx = picture.getContext('2d')
+            ctx.imageSmoothingEnabled = true
+            ctx.imageSmoothingQuality = 'high'
 
-                const ctx = picture.getContext('2d')
-                ctx.imageSmoothingEnabled = true
-                ctx.imageSmoothingQuality = 'high'
-
-                this.$store.commit('clientsFrame/setPictureFromDatabase', "data:image/png;base64," + this.subList[idx].photo)
-                //this.clientPhoto =  "data:image/png;base64," + this.subList[idx].photo
-                
-                var image = new Image();
-                image.onload = function() {
-                    ctx.drawImage(image, 0, 0, picture.width, picture.height);
-                };
-                image.src = this.pictureFromDatabase
-            }
-
+            var image = new Image();
+            image.onload = function() {
+                ctx.drawImage(image, 0, 0, picture.width, picture.height);
+            };
+            image.src = this.pictureFromDatabase
+        
             this.modalShow = true
             this.modalInfo = this.subList[idx]
         },
@@ -125,7 +149,7 @@ export default {
                     phone_number: this.userInput
                 })
             } else {
-                return
+                res = await this.$axios.get('http://localhost:3000/v1/clients/getLatest')
             }
 
             res.data.forEach(element => {
@@ -140,7 +164,7 @@ export default {
                     photo: element.photo
                 })
             });
-
+/* 
             this.subList.forEach(element => {
                 if(element.inviterPhone == null) {
                     element.inviterPhone = 'не указано'
@@ -151,7 +175,7 @@ export default {
                 if(element.howToFind  == null) {
                     element.howToFind  = 'не указано'
                 }
-            });
+            }); */
         },
         changeCriterion() {
             this.userInput = ''
@@ -189,10 +213,8 @@ export default {
 
         .criterion-select {
             outline:none;
-
             background: #27282c;
             color: #adbbbe;
-
             border-radius: 50px;
             border: 1px solid #26272b;
             padding: 10px;
@@ -214,10 +236,8 @@ export default {
                 transition: transform 250ms ease-in-out;
                 font-size: 10px;
                 line-height: 18px;
-                
                 color: #adbbbe;
                 background-color: transparent;
-        
                 background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
                 background-repeat: no-repeat;
                 background-size: 18px 18px;
@@ -256,6 +276,11 @@ export default {
         .search-result {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
+
+            .search-result-header {
+                text-align: center;
+            }
+
             &>div {
                 padding: 5px 10px;
                 border: 1px solid black;
@@ -303,5 +328,4 @@ export default {
         }
     }
 }
-
 </style>

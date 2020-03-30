@@ -1,31 +1,42 @@
 <template>
     <div class="info-frame">
         <div class="close-button" @click="close">x</div>
+
         <div class="info-wrapper">
             <div class="static-info-rows">
-                <div v-for="k in 6" :key="k">{{ gridRows[k] }}</div>
+                <div
+                v-for="item in gridRowsToShow"
+                :key="item">
+                    <div>{{ item }}</div>
+                </div>
             </div>
+
             <div class="dynamic-info-rows">
-                <input class="user-input" :class="{ 'bordered': isEditOperation || isAddOperation }" type="text" v-model="gridNodes.fio" :disabled="!(isEditOperation || isAddOperation)">
-                <input class="user-input" :class="{ 'bordered': isEditOperation || isAddOperation }" type="text" v-model="gridNodes.phoneNum" :disabled="!(isEditOperation || isAddOperation)">
-                <input class="user-input" :class="{ 'bordered': isEditOperation || isAddOperation }" type="text" v-model="gridNodes.firstVisitDate" :disabled="!(isEditOperation || isAddOperation)">
-                <input class="user-input" :class="{ 'bordered': isEditOperation || isAddOperation }" type="text" v-model="gridNodes.howToFind" :disabled="!(isEditOperation || isAddOperation)">
-                <input class="user-input" :class="{ 'bordered': isEditOperation || isAddOperation }" type="text" v-model="gridNodes.inviterPhone" :disabled="!(isEditOperation || isAddOperation)">
-                <input class="user-input" :class="{ 'bordered': isEditOperation || isAddOperation }" type="text" v-model="gridNodes.note" :disabled="!(isEditOperation || isAddOperation)">
+                <input
+                v-for="(value, key) in gridNodesToShow"
+                :key="key"
+                type="text"
+                class="user-input"
+                :class="{ 'bordered': isEditOperation || isAddOperation }"
+                :disabled="!(isEditOperation || isAddOperation)"
+                v-model="gridNodes[key]">
             </div>
+
             <camera 
             class="camera"
             v-bind:videoContent="gridNodes.photo"
             />
-            
         </div>
+
         <div class="add-button-wrapper" v-if="isAddOperation">
             <button class="add-button" @click="addClient">Добавить</button>
         </div>
+
         <div class="edit-buttons-wrapper" v-if="!isAddOperation">
             <button class="change-button" @click="editClient">{{ isEditOperation ? 'Применить' : 'Изменить' }}</button>
             <button class="remove-button" @click="removeClientClicked">Удалить</button>
         </div>
+
         <confirmModal
             v-show="confirmVisible"
             @agreeClose="removeClient"
@@ -61,7 +72,22 @@ export default {
             isEditOperation: 'clientsFrame/isEditOperation',
             pictureFromDatabase: 'clientsFrame/pictureFromDatabase',
             clientPhoto: 'clientsFrame/clientPhoto'
-        })
+        }),
+        gridRowsToShow: function() {
+            return this.gridRows.filter(function(item) {
+                return item !== 'id'
+            })
+        },
+        gridNodesToShow: function() {
+            return {
+                fio: this.gridNodes.fio,
+                phoneNum: this.gridNodes.phoneNum,
+                firstVisitDate: this.gridNodes.firstVisitDate,
+                howToFind: this.gridNodes.howToFind,
+                inviterPhone: this.gridNodes.inviterPhone,
+                note: this.gridNodes.note
+            }
+        }
     },
     methods: {
         async editClient() {
@@ -76,8 +102,6 @@ export default {
                 
                 // Отправляем пустую строку заместо фото, чтобы повторно не пересылать полученное фото
                 var photoSender = this.clientPhoto ? this.clientPhoto : ''
-
-                console.log(photoSender)
 
                 await this.$axios.post('http://localhost:3000/v1/clients/edit', {
                     id: this.gridNodes.id,
@@ -100,6 +124,8 @@ export default {
         close() {
             this.$store.commit('clientsFrame/setIsEditOperation', false)
             this.$store.commit('clientsFrame/setIsPictureTaken', false)
+            this.$store.commit('clientsFrame/setClientPhoto', '')
+
             this.$emit('modalClose');
         },
         async addClient() {
@@ -152,9 +178,8 @@ export default {
                 isCorrect = false
             }
 
-            if(!this.clientPhoto.length && !this.pictureFromDatabase) {
-                alertString += '• Сделаейте снимок\n'
-                isCorrect = false
+            if(!this.clientPhoto && !this.pictureFromDatabase) {
+                alertString += '• Возможно, стоит сделать снимок\n'
             }
 
             if(this.gridNodes.inviterPhone.length > 18) {
@@ -238,14 +263,6 @@ export default {
                 background: rgba(178, 34, 34, 0);
                 height: 30px;
                 margin-top: 10px;
-                
-                &.bordered {
-                    border: 1px solid white;
-                    margin-top: 8px;
-                }
-            }
-
-            input {
                 padding: 0px;
                 padding-left: 5px;
                 background: rgba(178, 34, 34, 0);
@@ -253,6 +270,11 @@ export default {
                 color:white;
                 font-size: 16px;
                 width: 300px;
+
+                &.bordered {
+                    border: 1px solid white;
+                    margin-top: 8px;
+                }
             }
         }
 

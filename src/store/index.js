@@ -21,39 +21,42 @@ const clientsModule = {
             return state.clientPhoto
         },
         isAddOperation: state => {
-            //console.log('get isAddOperation: ' + state.isAddOperation)
+            console.log('get isAddOperation: ' + state.isAddOperation)
             return state.isAddOperation
         },
         isPictureTaken: state => {
-            //console.log('get isPictureTaken: ' + state.isPictureTaken)
+            console.log('get isPictureTaken: ' + state.isPictureTaken)
             return state.isPictureTaken
         },
         isEditOperation: state => {
-            //console.log('get isEditOperation: ' + state.isEditOperation)
+            console.log('get isEditOperation: ' + state.isEditOperation)
             return state.isEditOperation
         },
         isVideoShow: state => {
-            //console.log('get isVideoShow: ' + !state.isPictureTaken)
+            console.log('get isVideoShow: ' + !state.isPictureTaken)
             return !state.isPictureTaken
         }
     },
     mutations: {
         setClientPhoto(state, value) {
+            if(!value) {
+                console.log('client photo removed')
+            }
             state.clientPhoto = value
         },
         setPictureFromDatabase(state, value) {
             state.pictureFromDatabase = value
         },
         setIsAddOperation (state, value) {
-            //console.log('isAddOperation state changed: ' + value)
+            console.log('isAddOperation state changed: ' + value)
             state.isAddOperation = value
         },
         setIsEditOperation (state, value) {
-            //console.log('isEditOperation state changed: ' + value)
+            console.log('isEditOperation state changed: ' + value)
             state.isEditOperation = value
         },
         setIsPictureTaken (state, value) {
-            //console.log('isPictureTaken state changed: ' + value)
+            console.log('isPictureTaken state changed: ' + value)
             state.isPictureTaken = value
         }
     }

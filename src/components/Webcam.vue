@@ -57,22 +57,19 @@ export default {
         takePicture() {
             if(!this.isPictureTaken) {
                 let ratio = (window.innerHeight < window.innerWidth) ? 16/9 : 9/16
-                const picture = document.querySelector('canvas')
 
+                const picture = document.querySelector('canvas')
                 picture.width = (window.innerHeight < 1280) ? window.innerWidth : 1280
                 picture.height = window.innerWidth / ratio
 
                 const ctx = picture.getContext('2d')
                 ctx.imageSmoothingEnabled = true
                 ctx.imageSmoothingQuality = 'high'
-
                 ctx.drawImage(document.querySelector('video'), 0, 0, picture.width, picture.height)
 
                 this.$store.commit('clientsFrame/setClientPhoto', picture.toDataURL())
-                //this.$emit('takePictureClicked', picture.toDataURL())
             } else {
                 this.$store.commit('clientsFrame/setClientPhoto', '')
-                //this.$emit('takePictureClicked', '')
             }
             
             this.$store.commit('clientsFrame/setIsPictureTaken', !this.isPictureTaken)
