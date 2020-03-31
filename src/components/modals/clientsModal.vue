@@ -4,10 +4,8 @@
 
         <div class="info-wrapper">
             <div class="static-info-rows">
-                <div
-                v-for="item in gridRowsToShow"
-                :key="item">
-                    <div>{{ item }}</div>
+                <div v-for="item in gridRowsToShow" :key="item">
+                    {{ item }}
                 </div>
             </div>
 
@@ -22,10 +20,7 @@
                 v-model="gridNodes[key]">
             </div>
 
-            <camera 
-            class="camera"
-            v-bind:videoContent="gridNodes.photo"
-            />
+            <camera class="camera" v-bind:videoContent="gridNodes.photo"/>
         </div>
 
         <div class="add-button-wrapper" v-if="isAddOperation">
@@ -48,7 +43,7 @@
 
 <script>
 import camera from '../Webcam'
-import confirmModal from '../modals/confirmModal'
+import confirmModal from './confirmModal'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -122,6 +117,7 @@ export default {
             this.$store.commit('clientsFrame/setIsEditOperation', !this.isEditOperation)
         },
         close() {
+            this.$store.commit('clientsFrame/setIsAddOperation', false)
             this.$store.commit('clientsFrame/setIsEditOperation', false)
             this.$store.commit('clientsFrame/setIsPictureTaken', false)
             this.$store.commit('clientsFrame/setClientPhoto', '')
@@ -209,15 +205,15 @@ export default {
             return isCorrect
         },
         fillSpaces() {
-            if(this.gridNodes.howToFind.length === 0) {
+            if(!this.gridNodes.howToFind) {
                 this.gridNodes.howToFind = '-'
             }
 
-            if(this.gridNodes.inviterPhone.length === 0) {
+            if(!this.gridNodes.inviterPhone) {
                 this.gridNodes.inviterPhone = '-'
             }
 
-            if(this.gridNodes.note.length === 0) {
+            if(!this.gridNodes.note) {
                 this.gridNodes.note = '-'
             }
         }
@@ -282,6 +278,7 @@ export default {
             margin-left: 30px;
         }
     }
+
     .close-button {
         display: flex;
         padding-right: 30px;
@@ -290,6 +287,7 @@ export default {
         font-size: 35px;
         cursor: pointer;
     }
+
     .edit-buttons-wrapper {
         display: flex;
         justify-content: space-around;
@@ -330,8 +328,6 @@ export default {
                 background: rgb(252, 169, 169);
             }
         }
-
-
     }
     .add-button-wrapper {
         display: flex;
@@ -367,13 +363,11 @@ export default {
 
         .info-wrapper {
             .dynamic-info-rows {
-                input {
+                .user-input {
                     width: 150px;
                 }
             }
         }
     }
 }
-
-
 </style>

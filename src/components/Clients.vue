@@ -4,54 +4,56 @@
             <div class="search-container">
                 <input class="search-input" type="text" :placeholder="searchCriterion" v-model="userInput" @input="search">
             </div>
+
             <select class="criterion-select" v-model="searchCriterion" @change="changeCriterion">
                 <option :selected="true">ФИО</option>
                 <option>Номер телефона</option>
             </select>
         </div>
         
-        <div class="sub-list">
+        <div class="client-list">
             <div class="search-result">
                 <div
-                class="search-result-header"
-                v-for="item in gridColumnsToShow"
-                :key="item">
+                    class="search-result-header"
+                    v-for="item in gridColumnsToShow"
+                    :key="item"
+                >
                     {{ item }}
                 </div>
             </div>
+
             <div 
-            class="search-result"
-            v-for="(node, idx) in subListToShow"
-            :key="idx"
-            @click="onRowClicked(idx)">
-                <div 
-                v-for="value in node"
-                :key="value">
+                class="search-result"
+                v-for="(node, idx) in clientListToShow"
+                :key="idx"
+                @click="onRowClicked(idx)"
+            >
+                <div v-for="value in node" :key="value">
                     {{ value }}
                 </div>
             </div>
         </div>
 
-        <div class="add-sub-wrapper">
-            <button class="add-sub" @click="addClient">Добавить клиента</button>
+        <div class="add-client-wrapper">
+            <button class="add-client" @click="addClient">Добавить клиента</button>
         </div>
 
-        <subModal
-        v-bind:gridRows="gridColumns"
-        v-bind:gridNodes="modalInfo"
-        v-show="modalShow"
-        @modalClose="modalClose"
+        <clientModal
+            v-bind:gridRows="gridColumns"
+            v-bind:gridNodes="modalInfo"
+            v-show="modalShow"
+            @modalClose="modalClose"
         />
     </div>
 </template>
 
 <script>
-import subModal from './modals/clientsModal'
+import clientModal from './modals/clientsModal'
 import { mapGetters } from 'vuex'
 
 export default {
     components: {
-        subModal
+        clientModal
     },
     data() {
         return {
@@ -66,7 +68,7 @@ export default {
                 "Примечание"
             ],
             userInput: '',
-            subList: [],
+            clientList: [],
             modalShow: false,
             modalInfo: {}
         }
@@ -80,9 +82,9 @@ export default {
                 return item === 'ФИО' || item === 'Номер телефона'
             })
         },
-        subListToShow: function() {
+        clientListToShow: function() {
             var newList = []
-            this.subList.forEach(node => {
+            this.clientList.forEach(node => {
                 newList.push({
                     fio: node.fio,
                     phoneNum: node.phoneNum
@@ -115,7 +117,7 @@ export default {
             this.$store.commit('clientsFrame/setIsPictureTaken', true)
             this.$store.commit('clientsFrame/setIsAddOperation', false)
             this.$store.commit('clientsFrame/setIsEditOperation', false)
-            this.$store.commit('clientsFrame/setPictureFromDatabase', "data:image/png;base64," + this.subList[idx].photo)
+            this.$store.commit('clientsFrame/setPictureFromDatabase', "data:image/png;base64," + this.clientList[idx].photo)
             
             let ratio = (window.innerHeight < window.innerWidth) ? 16/9 : 9/16
             const picture = document.querySelector('canvas')
@@ -134,11 +136,11 @@ export default {
             image.src = this.pictureFromDatabase
         
             this.modalShow = true
-            this.modalInfo = this.subList[idx]
+            this.modalInfo = this.clientList[idx]
         },
         async search() {
             let res
-            this.subList = []
+            this.clientList = []
 
             if(this.searchCriterion === 'ФИО' && this.userInput.length !== 0) {
                 res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByFio', {
@@ -153,7 +155,7 @@ export default {
             }
 
             res.data.forEach(element => {
-                this.subList.push({
+                this.clientList.push({
                     id: element.id,
                     fio: element.fio,
                     phoneNum: element.phone_number,
@@ -164,8 +166,9 @@ export default {
                     photo: element.photo
                 })
             });
-/* 
-            this.subList.forEach(element => {
+            
+            this.clientList = this.clientList.reverse()
+            this.clientList.forEach(element => {
                 if(element.inviterPhone == null) {
                     element.inviterPhone = 'не указано'
                 }
@@ -175,11 +178,11 @@ export default {
                 if(element.howToFind  == null) {
                     element.howToFind  = 'не указано'
                 }
-            }); */
+            });
         },
         changeCriterion() {
             this.userInput = ''
-            this.subList = []
+            this.clientList = []
         },
         modalClose() {
             this.modalShow = false
@@ -265,7 +268,7 @@ export default {
             }   
         }
     }
-    .sub-list {
+    .client-list {
         background: #27282c;
         width: 95%;
         max-height: 55%;
@@ -306,25 +309,14 @@ export default {
         transition: all 0.3s;
     }
 
-    .add-sub-wrapper {
+    .add-client-wrapper {
         text-align: center;
         margin: 20px;
 
-        .add-sub {
+        .add-client {
             padding: 20px;
             background: #575756;
             font-size: 1.1em;
-        }
-    }
-
-    .goto-sub-types-wrapper {
-        position: fixed;
-        bottom: 5%;
-        right: 2%;
-        .goto-sub-types {
-            padding: 10px;
-            background: #adbbbe;
-            font-size: 1em;
         }
     }
 }
