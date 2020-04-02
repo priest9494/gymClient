@@ -1,29 +1,29 @@
 <template>
-    <div class="sub-types-frame">
+    <div class="trainers-frame">
         <div class="user-input">
             <div class="search-container">
-                <input class="search-input" type="text" placeholder="Наименование" v-model="userInput" @input="search">
+                <input class="search-input" type="text" placeholder="ФИО" v-model="userInput" @input="search">
             </div>
         </div>
 
-        <div class="sub-list">
+        <div class="trainer-list">
             <div class="search-result">
-                <div v-for="k in 3" :key="k">
+                <div v-for="k in 2" :key="k">
                     {{ gridColumns[k] }}
                 </div>
             </div>
-            <div class="search-result" v-for="(item, idx) in subTypesList" :key="idx" @click="onRowClicked(idx)">
-                <div v-for="k in 3" :key="k">
+            <div class="search-result" v-for="(item, idx) in trainersList" :key="idx" @click="onRowClicked(idx)">
+                <div v-for="k in 2" :key="k">
                     {{ Object.values(item)[k] }}
                 </div>
             </div>
         </div>
 
         <div class="button-wrapper">
-            <button class="add-sub-type" @click="addSubType">Добавить вид абонемента</button>
+            <button class="add-trainer" @click="addTrainer">Добавить тренера</button>
         </div>
 
-        <subTypesModal
+        <trainersModal
         v-bind:gridRows="gridColumns"
         v-bind:gridNodes="modalInfo"
         v-bind:isAddOperation="isAddOperation"
@@ -34,11 +34,11 @@
 </template>
 
 <script>
-import subTypesModal from './modals/subTypesModal'
+import trainersModal from '../modals/trainersModal'
 
 export default {
     components: {
-        subTypesModal
+        trainersModal
     },
     created: function() {
         this.search()
@@ -47,11 +47,10 @@ export default {
         return {
             gridColumns: [
                 'id',
-                'Наименование',
-                'Цена',
-                'Количество занятий'
+                'ФИО',
+                'Дата рождения'
             ],
-            subTypesList: [],
+            trainersList: [],
             userInput: '',
             modalShow: false,
             modalInfo: [],
@@ -65,44 +64,46 @@ export default {
         },
         async search() {
             let res
-        
-            res = await this.$axios.post('http://localhost:3000/v1/types/findByTitle', {
-                title: this.userInput
+            this.trainersList = [];
+
+            res = await this.$axios.post('http://localhost:3000/v1/trainers/findByFio', {
+                fio: this.userInput
             })
 
-            console.log(res);
-            this.subTypesList = [];
-
             res.data.forEach(element => {
-                this.subTypesList.push({
+                this.trainersList.push({
                     id: element.id,
-                    title: element.title,
-                    cost: element.cost,
-                    training: element.training,
+                    fio: element.fio,
+                    dateBirth: this.convert(element.date_birth)
                 })
             });
         },
-        onRowClicked(idx) {
-            this.isAddOperation = false
-            this.modalShow = true;
-            this.modalInfo = this.subTypesList[idx];
-        },
-        addSubType() {
+        async addTrainer() {
             this.modalShow = true
             this.isAddOperation = true
             this.modalInfo = {
                 id: '',
-                title: '',
-                cost: '',
-                training: ''
+                fio: '',
+                dateBirth: ''
             }
+        },
+        onRowClicked(idx) {
+            this.isAddOperation = false
+            this.modalShow = true
+            this.modalInfo = this.trainersList[idx]
+        },
+        convert(str) {
+            var date = new Date(str),
+            mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+            day = ("0" + date.getDate()).slice(-2);
+            return [day, mnth, date.getFullYear()].join(".");
         }
     }
 }
 </script>
 
 <style lang="scss" scoped>
-.sub-types-frame {
+.trainers-frame {
     width: 100%;
     height: calc(100vh - 74px);
     background: #2f3136;
@@ -155,7 +156,7 @@ export default {
         }
     }
 
-    .sub-list {
+    .trainer-list {
         background: #27282c;
         width: 95%;
         max-height: 55%;
@@ -165,7 +166,7 @@ export default {
 
         .search-result {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             &>div {
                 padding: 5px 10px;
                 border: 1px solid black;
@@ -182,7 +183,7 @@ export default {
         text-align: center;
         margin-top: 10px;
 
-        .add-sub-type {
+        .add-trainer {
             padding: 20px;
             background: #575756;
             outline: none;

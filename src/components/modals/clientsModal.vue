@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import camera from '../Webcam'
+import camera from '../frames/Webcam'
 import confirmModal from './confirmModal'
 import { mapGetters } from 'vuex'
 

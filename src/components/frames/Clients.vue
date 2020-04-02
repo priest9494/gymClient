@@ -1,24 +1,11 @@
 <template>
-    <div class="subs-frame">
-        <div class="user-input">
-            <div class="search-container">
-                <input
-                    class="search-input"
-                    type="text"
-                    :placeholder="searchCriterion"
-                    v-model="userInput"
-                    @input="search"
-                >
-            </div>
-
-            <select class="criterion-select" v-model="searchCriterion">
-                <option :selected="true">Номер абонемента</option>
-                <option>ФИО</option>
-                <option>Номер телефона</option>
-            </select>
-        </div>
+    <div class="clients-frame">
+        <search-panel
+            v-bind:options="searchOptions"
+            @search="search"
+        />
         
-        <div class="sub-list">
+        <div class="client-list">
             <div class="search-result">
                 <div
                     class="search-result-header"
@@ -31,32 +18,21 @@
 
             <div 
                 class="search-result"
-                v-for="(node, idx) in subListToShow"
+                v-for="(node, idx) in clientListToShow"
                 :key="idx"
                 @click="onRowClicked(idx)"
             >
-                <div 
-                    v-for="value in node"
-                    :key="value"
-                >
+                <div v-for="value in node" :key="value">
                     {{ value }}
                 </div>
             </div>
         </div>
 
-        <div class="add-sub-wrapper">
-            <button class="add-sub" @click="addSub">Добавить абонемент</button>
+        <div class="add-client-wrapper">
+            <button class="add-client" @click="addClient">Добавить клиента</button>
         </div>
 
-        <div class="goto-sub-types-wrapper">
-            <router-link to="/subTypes">
-                <button class="goto-sub-types">
-                    В раздел "Виды абонементов"
-                </button>
-            </router-link>
-        </div>
-        
-        <subModal
+        <client-modal
             v-bind:gridRows="gridColumns"
             v-bind:gridNodes="modalInfo"
             v-show="modalShow"
@@ -66,52 +42,48 @@
 </template>
 
 <script>
-import subModal from './modals/subsModal'
+import searchPanel from '../other/searchPanel'
+import clientModal from '../modals/clientsModal'
 import { mapGetters } from 'vuex'
 
 export default {
     components: {
-        subModal
+        'client-modal': clientModal,
+        'search-panel': searchPanel
     },
     data() {
         return {
-            searchCriterion: 'Номер абонемента',
+            searchOptions: [
+                'ФИО',
+                'Номер телефона'
+            ],
             gridColumns: [
                 "id",
-                "Номер абонемента",
-                "Клиент",
-                "Вид абонемента",
-                "Тренер",
-                "Дата начала",
-                "Дата окончания",
-                "Время начала",
-                "Осталось занятий",
-                "Осталось оплатить",
-                "Примечание"
-            ],
-            gridColumnsToShow: [
-                "Номер абонемента",
                 "ФИО",
                 "Номер телефона",
+                "Дата первого визита",
+                "Откуда узнали",
+                "Телефон пригласившего",
+                "Примечание"
             ],
-            userInput: '',
-            subList: [],
+            clientList: [],
             modalShow: false,
             modalInfo: {}
         }
     },
-    created() {
-        this.search()
-    },
     computed: {
         ...mapGetters({
-            isAddOperation: 'subsFrame/isAddOperation'
+            pictureFromDatabase: 'clientsFrame/pictureFromDatabase'
         }),
-        subListToShow: function() {
+        gridColumnsToShow: function() {
+            return this.gridColumns.filter(function(item) {
+                return item === 'ФИО' || item === 'Номер телефона'
+            })
+        },
+        clientListToShow: function() {
             var newList = []
-            this.subList.forEach(node => {
+            this.clientList.forEach(node => {
                 newList.push({
-                    subNumber: node.subNumber,
                     fio: node.fio,
                     phoneNum: node.phoneNum
                 })
@@ -120,69 +92,91 @@ export default {
             return newList
         }
     },
+    created() {
+        this.search()
+    },
     methods: {
-        addSub() {
-            this.$store.commit('subsFrame/setIsAddOperation', true)
+        addClient() {
+            this.$store.commit('clientsFrame/setIsAddOperation', true)
+            this.$store.commit('clientsFrame/setIsPictureTaken', false)
+
             this.modalShow = true
-            
             this.modalInfo = {
                 id: '',
-                subNumber: '',
                 fio: '',
                 phoneNum: '',
-                type: '',
-                trainer: '',
-                begDate: '',
-                endDate: '',
-                begTime: '',
-                trainLeft: '',
-                payLeft: '',
+                firstVisitDate: this.convert(new Date()),
+                howToFind: '',
+                inviterPhone: '',
                 note: ''
             }
         },
         onRowClicked(idx) {
-            this.modalShow = true;
-            this.modalInfo = this.subList[idx];
+            this.$store.commit('clientsFrame/setIsPictureTaken', true)
+            this.$store.commit('clientsFrame/setIsAddOperation', false)
+            this.$store.commit('clientsFrame/setIsEditOperation', false)
+            this.$store.commit('clientsFrame/setPictureFromDatabase', "data:image/png;base64," + this.clientList[idx].photo)
+            
+            let ratio = (window.innerHeight < window.innerWidth) ? 16/9 : 9/16
+            const picture = document.querySelector('canvas')
+
+            picture.width = (window.innerHeight < 1280) ? window.innerWidth : 1280
+            picture.height = window.innerWidth / ratio
+
+            const ctx = picture.getContext('2d')
+            ctx.imageSmoothingEnabled = true
+            ctx.imageSmoothingQuality = 'high'
+
+            var image = new Image();
+            image.onload = function() {
+                ctx.drawImage(image, 0, 0, picture.width, picture.height);
+            };
+            image.src = this.pictureFromDatabase
+        
+            this.modalShow = true
+            this.modalInfo = this.clientList[idx]
         },
-        async search() {
+        async search(searchCriterion, userInput) {
             let res
+            this.clientList = []
+            console.log(searchCriterion + '   ' + userInput)
 
-            this.subList = [];
-
-            if(this.userInput.length === 0) {
-                res = await this.$axios.get('http://localhost:3000/v1/subs/getLatest')
-            }
-
-            if(this.searchCriterion === 'Номер абонемента') {
-                res = await this.$axios.post('http://localhost:3000/v1/subs/getSubBySubNumber', {
-                    sub_number: this.userInput
+            if(searchCriterion === 'ФИО' && userInput) {
+                res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByFio', {
+                    fio: userInput
                 })
-            } else if(this.searchCriterion === 'ФИО') {
-                res = await this.$axios.post('http://localhost:3000/v1/subs/getSubByFio', {
-                    fio: this.userInput
+            } else if(userInput){
+                res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByPhoneNumber', {
+                    phone_number: userInput
                 })
             } else {
-                res = await this.$axios.post('http://localhost:3000/v1/subs/getSubByPhoneNumber', {
-                    phone_number: this.userInput
-                })
+                res = await this.$axios.get('http://localhost:3000/v1/clients/getLatest')
             }
 
             res.data.forEach(element => {
-                this.subList.push({
+                this.clientList.push({
                     id: element.id,
-                    subNumber: element.sub_number,
-                    fio: element.client_fio,
+                    fio: element.fio,
                     phoneNum: element.phone_number,
-                    type: element.title + ' ' + element.training + ' занятий ' + element.cost + ' рублей',
-                    trainer: element.trainer_fio,
-                    begDate: this.convert(element.begin_date),
-                    endDate: this.convert(element.end_date),
-                    begTime: element.start_time,
-                    trainLeft: element.training_left,
-                    payLeft: element.left_to_pay,
+                    firstVisitDate: this.convert(element.first_visit_date),
+                    howToFind: element.how_to_find,
+                    inviterPhone: element.inviter_phone,
                     note: element.note,
-                    client: element.client_fio + ' ' + element.phone_number
+                    photo: element.photo
                 })
+            });
+            
+            this.clientList = this.clientList.reverse()
+            this.clientList.forEach(element => {
+                if(element.inviterPhone == null) {
+                    element.inviterPhone = 'не указано'
+                }
+                if(element.note == null) {
+                    element.note = 'не указано'
+                }
+                if(element.howToFind  == null) {
+                    element.howToFind  = 'не указано'
+                }
             });
         },
         modalClose() {
@@ -193,7 +187,7 @@ export default {
             var date = new Date(str),
             mnth = ("0" + (date.getMonth() + 1)).slice(-2),
             day = ("0" + date.getDate()).slice(-2);
-            return [day, mnth, date.getFullYear()].join(".");
+            return [day, mnth, date.getFullYear()].join(".")
         }
     }
 }
@@ -203,12 +197,12 @@ export default {
 @import url('https://fonts.googleapis.com/css?family=Raleway:400,700,900');
 @import url('https://fonts.googleapis.com/css?family=Ubuntu+Condensed');
 
-.subs-frame {
-    background: #2f3136;
-    color: #adbbbe;
+.clients-frame {
     width: 100%;
     height: calc(100vh - 74px);
+    background: #2f3136;
     position: relative;
+    color: #adbbbe;
 
     .user-input {
         display: flex;
@@ -217,10 +211,8 @@ export default {
 
         .criterion-select {
             outline:none;
-
             background: #27282c;
             color: #adbbbe;
-
             border-radius: 50px;
             border: 1px solid #26272b;
             padding: 10px;
@@ -242,10 +234,8 @@ export default {
                 transition: transform 250ms ease-in-out;
                 font-size: 10px;
                 line-height: 18px;
-                
                 color: #adbbbe;
                 background-color: transparent;
-        
                 background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
                 background-repeat: no-repeat;
                 background-size: 18px 18px;
@@ -273,7 +263,7 @@ export default {
             }   
         }
     }
-    .sub-list {
+    .client-list {
         background: #27282c;
         width: 95%;
         max-height: 55%;
@@ -283,7 +273,7 @@ export default {
 
         .search-result {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
 
             .search-result-header {
                 text-align: center;
@@ -314,27 +304,15 @@ export default {
         transition: all 0.3s;
     }
 
-    .add-sub-wrapper {
+    .add-client-wrapper {
         text-align: center;
         margin: 20px;
 
-        .add-sub {
+        .add-client {
             padding: 20px;
             background: #575756;
             font-size: 1.1em;
         }
     }
-
-    .goto-sub-types-wrapper {
-        position: fixed;
-        bottom: 5%;
-        right: 2%;
-        .goto-sub-types {
-            padding: 10px;
-            background: #adbbbe;
-            font-size: 1em;
-        }
-    }
 }
-
 </style>

@@ -42,7 +42,10 @@
         <helperModal
             v-show="helperVisible"
             v-bind:helperTitle="helperTitle"
+            v-bind:currentOptionKey="currentOptionKey"
+            :key="searchPanelKey"
             @modalClose="helperVisible = false"
+            @rowChoosed="rowChoosed"
         />
     </div>
 </template>
@@ -51,6 +54,7 @@
 import confirmModal from './confirmModal'
 import helperModal from './addSubHelperModal'
 import { mapGetters } from 'vuex'
+import validate from '../../validation/subValidation'
 
 export default {
     name: 'get-full-info-modal',
@@ -67,14 +71,55 @@ export default {
             isEditable: false,
             confirmVisible: false,
             helperVisible: false,
-            helperTitle: ''
+            helperTitle: '',
+            currentOptionKey: 'clients',
+            searchPanelKey: 0,
+            choosedId: {
+                clientId: '',
+                trainerId: '',
+                typeId: ''
+            }
         }
     },
     methods: {
+        rowChoosed(choosedNode) {
+            this.helperVisible = false
+            if(this.currentOptionKey === 'clients') {
+                this.gridNodes.client = choosedNode.fio + '  ' + choosedNode.phoneNum
+                this.choosedId.clientId = choosedNode.id
+                console.log(this.choosedId.clientId)
+            }
+
+            if(this.currentOptionKey === 'trainers') {
+                this.gridNodes.trainer = choosedNode.fio
+                this.choosedId.trainerId = choosedNode.id
+                console.log(this.choosedId.trainerId)
+            }
+
+            if(this.currentOptionKey === 'types') {
+                this.gridNodes.type = choosedNode.title + ' ' + choosedNode.training + ' занятий ' + choosedNode.cost + ' руб'
+                this.choosedId.typeId = choosedNode.id
+                console.log(this.choosedId.typeId)
+            }
+        },
         inputClicked(key) {
             console.log(key)
+            this.searchPanelKey += 1
+
             if(key === 'client') {
+                this.currentOptionKey = 'clients'
                 this.helperTitle = 'Выберите клиента'
+                this.helperVisible = true
+                
+            }
+            if(key === 'type') {
+                this.currentOptionKey = 'types'
+                this.helperTitle = 'Выберите вид абонемента'
+                this.helperVisible = true
+            }
+            if(key === 'trainer') {
+                this.currentOptionKey = 'trainers'
+                this.helperTitle = 'Выберите тренера'
                 this.helperVisible = true
             }
         },
@@ -91,6 +136,40 @@ export default {
 
         },
         addSub() {
+            var { isCorrect, alertMessage } = validate(this.gridNodes)
+            if(!isCorrect) {
+                alert(alertMessage)
+                return
+            }
+            /* if(!this.validate()) {
+                return
+            }
+            this.fillSpaces() */
+        },
+        /* validate() {
+            //Номер абонемента:
+                // Длина
+                // введен ли
+                // проверить уникальность
+            // Клиент
+                // Выбран ли
+            // Вид абонемента
+                // Выбран ли
+            // Тренер
+                // Выбран ли
+            // Дата начала
+                // Выбрана ли
+                // Формат
+                // Меньше даты окончания
+            // Дата окончания
+                //  Выбрана ли
+                // Формат
+            // Время начала
+                // Формат
+            // Примечание
+                // Длина
+        }, */
+        fillSpaces() {
 
         },
         close() {
@@ -107,7 +186,7 @@ export default {
         }),
         gridRowsToShow: function() {
             return this.gridRows.filter(function(item) {
-                return item !== 'id'
+                return item !== 'id' && item !== 'Осталось занятий' && item !== 'Осталось оплатить'
             })
         },
         gridNodesToShow: function() {
@@ -119,8 +198,6 @@ export default {
                 begDate: this.gridNodes.begDate,
                 endDate: this.gridNodes.endDate,
                 begTime: this.gridNodes.begTime,
-                trainLeft: this.gridNodes.trainLeft,
-                payLeft: this.gridNodes.payLeft,
                 note: this.gridNodes.note
             }
         }

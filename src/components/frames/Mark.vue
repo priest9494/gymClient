@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import modal from './modals/confirmModal'
+import modal from '../modals/confirmModal'
 
 export default {
     components: {

@@ -11,21 +11,21 @@ const subsModule = {
     },
     getters: {
         isAddOperation: state => {
-            console.log('get isAddOperation: ' + state.isAddOperation)
+            //console.log('get isAddOperation: ' + state.isAddOperation)
             return state.isAddOperation
         },
         isEditOperation: state => {
-            console.log('get isEditOperation: ' + state.isAddOperation)
+            //console.log('get isEditOperation: ' + state.isAddOperation)
             return state.isEditOperation
         }
     },
     mutations: {
         setIsAddOperation(state, value) {
-            console.log('isAddOperation state changed: ' + value)
+            //console.log('isAddOperation state changed: ' + value)
             state.isAddOperation = value
         },
         setIsEditOperation(state, value) {
-            console.log('isEditOperation state changed: ' + value)
+            //console.log('isEditOperation state changed: ' + value)
             state.isEditOperation = value
         }
     }

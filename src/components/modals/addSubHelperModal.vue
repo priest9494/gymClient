@@ -3,33 +3,19 @@
         <div class="helper-frame">
             <div class="helper-header">
                 <div class="close-button" @click="$emit('modalClose')">x</div>
-
                 <div class="helper-title">
                     {{ helperTitle }}
                 </div>
             </div>
-            <div class="user-input">
-                <div class="search-container">
-                    <input
-                        class="search-input"
-                        type="text"
-                        :placeholder="searchCriterion"
-                        v-model="userInput"
-                        @input="search"
-                    >
-                </div>
-
-                <select class="criterion-select" v-model="searchCriterion">
-                    <option :selected="true">ФИО</option>
-                    <option>Номер телефона</option>
-                </select>
-            </div>
-
-            <div class="sub-list">
-                <div class="search-result">
+            <search-panel
+                v-bind:options="currentOption"
+                @search="search"
+            />
+            <div class="helper-body">
+                <div class="search-result" :class="{ 'types': currentOptionKey == 'types'}">
                     <div
                         class="search-result-header"
-                        v-for="item in gridColumnsToShow"
+                        v-for="item in gridColumns"
                         :key="item"
                     >
                         {{ item }}
@@ -38,7 +24,8 @@
 
                 <div 
                     class="search-result"
-                    v-for="(node, idx) in subListToShow"
+                    :class="{ 'types': currentOptionKey == 'types' }"
+                    v-for="(node, idx) in gridNodesToShow"
                     :key="idx"
                     @click="onRowClicked(idx)"
                 >
@@ -52,13 +39,188 @@
 </template>
 
 <script>
+import searchPanel from '../other/searchPanel'
+
 export default {
+    components: {
+        'search-panel': searchPanel
+    },
     props: {
-        helperTitle: String
+        helperTitle: String,
+        currentOptionKey: String
+    },
+    created() {
+        this.search()
     },
     data() {
         return {
-            searchCriterion: 'ФИО'
+            searchOptions: {
+                clients: [
+                    'ФИО',
+                    'Номер телефона'
+                ],
+                types: [
+                    'Наименование'
+                ],
+                trainers: [
+                    'ФИО'
+                ]
+            },
+            gridNodes: []
+        }
+    },
+    computed: {
+        gridNodesToShow: function() {
+            var newList = []
+            if(this.currentOptionKey === 'clients') {
+                this.gridNodes.forEach(node => {
+                    newList.push({
+                        fio: node.fio,
+                        phoneNum: node.phoneNum
+                    })
+                });
+            }
+
+            if(this.currentOptionKey === 'types') {
+                this.gridNodes.forEach(node => {
+                    newList.push({
+                        title: node.title,
+                        cost: node.cost,
+                        training: node.training,
+                    })
+                });
+            }
+
+            if(this.currentOptionKey === 'trainers') {
+                this.gridNodes.forEach(node => {
+                    newList.push({
+                        fio: node.fio,
+                        dateBirth: node.dateBirth
+                    })
+                });
+            }
+            
+            return newList
+        },
+        currentOption() {
+            return this.searchOptions[this.currentOptionKey]
+        },
+        gridColumns() {
+            if(this.currentOptionKey === 'clients') {
+                return [
+                    'ФИО',
+                    'Номер телефона'
+                ]
+            } else if(this.currentOptionKey === 'types') {
+                return [
+                    'Наименование',
+                    'Цена',
+                    'Количество занятий'
+                ]
+            } else {
+                return [
+                    'ФИО',
+                    'Дата рождения'
+                ]
+            }
+        }
+    },
+    methods: {
+        onRowClicked(idx) {
+            this.$emit('rowChoosed', this.gridNodes[idx])
+        },
+        search(searchCriterion, userInput) {
+            if(this.currentOptionKey === 'clients') {
+                console.log('search client!!')
+                this.searchClient(searchCriterion, userInput)
+            } else if(this.currentOptionKey === 'types') {
+                this.searchType(userInput)
+            } else {
+                this.searchTrainer(searchCriterion, userInput)
+            }
+            //console.log(this.currentOptionKey + ' ' + searchCriterion + ' ' + userInput)
+        },
+        async searchClient(searchCriterion, userInput) {
+            let res
+            this.gridNodes = []
+
+            if(searchCriterion === 'ФИО' && userInput) {
+                res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByFio', {
+                    fio: userInput
+                })
+            } else if(userInput){
+                res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByPhoneNumber', {
+                    phone_number: userInput
+                })
+            } else {
+                res = await this.$axios.get('http://localhost:3000/v1/clients/getLatest')
+            }
+
+            res.data.forEach(element => {
+                this.gridNodes.push({
+                    id: element.id,
+                    fio: element.fio,
+                    phoneNum: element.phone_number,
+                    firstVisitDate: this.convert(element.first_visit_date),
+                    howToFind: element.how_to_find,
+                    inviterPhone: element.inviter_phone,
+                    note: element.note,
+                    photo: element.photo
+                })
+            });
+            
+            this.gridNodes = this.gridNodes.reverse()
+        },
+        async searchType(userInput) {
+            let res
+            this.gridNodes = [];
+            
+            if(userInput) {
+                res = await this.$axios.post('http://localhost:3000/v1/types/findByTitle', {
+                    title: userInput
+                })
+            } else {
+                res = await this.$axios.get('http://localhost:3000/v1/types/getLatest')
+            }
+            
+            res.data.forEach(element => {
+                this.gridNodes.push({
+                    id: element.id,
+                    title: element.title,
+                    cost: element.cost,
+                    training: element.training,
+                })
+            });
+            
+            this.gridNodes = this.gridNodes.reverse()
+        },
+        async searchTrainer(searchCriterion, userInput) {
+            let res
+            this.gridNodes = [];
+
+            if(userInput) {
+                res = await this.$axios.post('http://localhost:3000/v1/trainers/findByFio', {
+                    fio: userInput
+                })
+            } else {
+                res = await this.$axios.get('http://localhost:3000/v1/trainers/getLatest')
+            }
+            
+            res.data.forEach(element => {
+                this.gridNodes.push({
+                    id: element.id,
+                    fio: element.fio,
+                    dateBirth: this.convert(element.date_birth)
+                })
+            });
+            console.log(res)
+            this.gridNodes = this.gridNodes.reverse()
+        },
+        convert(str) {
+            var date = new Date(str),
+            mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+            day = ("0" + date.getDate()).slice(-2);
+            return [day, mnth, date.getFullYear()].join(".")
         }
     }
 }
@@ -99,73 +261,38 @@ export default {
                 right: 20px;
                 font-size: 30px;
             }
-
-            
         }
 
-        .user-input {
-            display: flex;
-            justify-content: center;
-            padding: 10px 0px 10px 0px;
+        .helper-body {
+            margin: 0 5%;
+            overflow-y: auto;
+            overflow-x: auto;
+            max-height: 70%;
 
-            .search-container {
-                width: 22%;
-                margin: 0px 70px 0px 70px;
-                .search-input {
-                    padding: 12px 24px;
-                    width: 100%;
-                    transition: transform 250ms ease-in-out;
-                    font-size: 10px;
-                    line-height: 18px;
-                    
-                    color: #adbbbe;
-                    background-color: transparent;
-            
-                    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
-                    background-repeat: no-repeat;
-                    background-size: 18px 18px;
-                    background-position: 95% center;
-                    border-radius: 50px;
-                    border: 1px solid #575756;
-                    transition: all 250ms ease-in-out;
-                    backface-visibility: hidden;
-                    transform-style: preserve-3d;
+            .search-result {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
 
-                    &::placeholder {
-                        color: color(#575756 a(0.8));
-                        text-transform: uppercase;
-                        letter-spacing: 1.5px;
-                    }
-                
-                    &:hover,
-                    &:focus {
-                        outline: 0;
-                        border: 1px solid transparent;
-                        border-bottom: 1px solid #575756;
-                        border-radius: 0;
-                        background-position: 100% center;
-                    }
-                }   
-            }
+                .search-result-header {
+                    text-align: center;
+                }
 
-            .criterion-select {
-                outline:none;
+                &>div {
+                    padding: 5px 10px;
+                    border: 1px solid black;
+                }
 
-                background: #27282c;
-                color: #adbbbe;
+                *::selection {
+                    background: rgb(255, 1, 1);
+                    color: black;
+                }
 
-                border-radius: 50px;
-                border: 1px solid #26272b;
-                padding: 10px;
-                transition: all 0.3s;
-
-                &:hover,
-                &:focus {
-                    padding: 10px 25px;
-                    color: #c1cbce;
+                &.types {
+                    grid-template-columns: repeat(3, 1fr);
                 }
             }
         }
+        
     }
 }
 

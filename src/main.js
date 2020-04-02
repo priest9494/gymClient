@@ -3,11 +3,11 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import App from './App.vue'
-import Mark from './components/Mark.vue'
-import Subs from './components/Subs.vue'
-import SubTypes from './components/SubTypes.vue'
-import Trainers from './components/Trainers.vue'
-import Clients from './components/Clients.vue'
+import Mark from './components/frames/Mark.vue'
+import Subs from './components/frames/Subs.vue'
+import SubTypes from './components/frames/SubTypes.vue'
+import Trainers from './components/frames/Trainers.vue'
+import Clients from './components/frames/Clients.vue'
 
 import {store} from './store';
 
