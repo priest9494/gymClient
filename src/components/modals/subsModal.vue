@@ -135,42 +135,33 @@ export default {
         removeSub() {
 
         },
-        addSub() {
+        async addSub() {
             var { isCorrect, alertMessage } = validate(this.gridNodes)
+            
             if(!isCorrect) {
                 alert(alertMessage)
                 return
             }
-            /* if(!this.validate()) {
-                return
-            }
-            this.fillSpaces() */
-        },
-        /* validate() {
-            //Номер абонемента:
-                // Длина
-                // введен ли
-                // проверить уникальность
-            // Клиент
-                // Выбран ли
-            // Вид абонемента
-                // Выбран ли
-            // Тренер
-                // Выбран ли
-            // Дата начала
-                // Выбрана ли
-                // Формат
-                // Меньше даты окончания
-            // Дата окончания
-                //  Выбрана ли
-                // Формат
-            // Время начала
-                // Формат
-            // Примечание
-                // Длина
-        }, */
-        fillSpaces() {
 
+            var begSplit = this.gridNodes.begDate.split(/[./-]/);
+            var endSplit = this.gridNodes.endDate.split(/[./-]/);
+
+            var begDateToSend = new Date(begSplit[2], begSplit[1] - 1, parseInt(begSplit[0]) + 1);
+            var endDateToSend = new Date(endSplit[2], endSplit[1] - 1, parseInt(endSplit[0]) + 1);
+
+            await this.$axios.post('http://localhost:3000/v1/subs/add', {
+                sub_number: this.gridNodes.subNumber,
+                type_id: this.choosedId.typeId,
+                client_id: this.choosedId.clientId,
+                trainer_id: this.choosedId.trainerId,
+                begin_date: begDateToSend,
+                end_date: endDateToSend,
+                start_time: this.gridNodes.begTime + ':00',
+                note: this.gridNodes.note
+            })
+
+            this.$store.commit('subsFrame/setIsAddOperation', false)
+            this.$emit('modalClose');
         },
         close() {
             this.$store.commit('subsFrame/setIsAddOperation', false)
@@ -185,21 +176,36 @@ export default {
             isEditOperation: 'subsFrame/isEditOperation',
         }),
         gridRowsToShow: function() {
-            return this.gridRows.filter(function(item) {
-                return item !== 'id' && item !== 'Осталось занятий' && item !== 'Осталось оплатить'
-            })
+            if(this.isAddOperation) {
+                return this.gridRows.filter(function(item) {
+                    return item !== 'id' && item !== 'Осталось занятий' && item !== 'Осталось оплатить'
+                })
+            } else {
+                return this.gridRows.filter(function(item) {
+                    return item !== 'id'
+                })
+            }
+            
         },
         gridNodesToShow: function() {
-            return {
-                subNumber: this.gridNodes.subNumber,
-                client: this.gridNodes.client,
-                type: this.gridNodes.type,
-                trainer: this.gridNodes.trainer,
-                begDate: this.gridNodes.begDate,
-                endDate: this.gridNodes.endDate,
-                begTime: this.gridNodes.begTime,
-                note: this.gridNodes.note
+            var node = {}
+
+            node.subNumber = this.gridNodes.subNumber
+            node.client = this.gridNodes.client
+            node.type = this.gridNodes.type
+            node.trainer = this.gridNodes.trainer
+            node.begDate = this.gridNodes.begDate
+            node.endDate = this.gridNodes.endDate
+            node.begTime = this.gridNodes.begTime
+            
+            if(!this.isAddOperation) {
+                node.trainLeft = this.gridNodes.trainLeft
+                node.payLeft = this.gridNodes.payLeft
             }
+
+            node.note = this.gridNodes.note
+
+            return node
         }
     }
 }

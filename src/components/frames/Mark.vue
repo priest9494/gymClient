@@ -25,7 +25,7 @@
                     <div>{{ traintngLeft }}</div>
                     <div>{{ paymentLeft }}</div>
                 </div>
-                <canvas class="user-photo"></canvas>
+                <canvas class="user-photo" v-show="clientPhotoShowed"></canvas>
             </div>
         </div>
         
@@ -61,7 +61,8 @@ export default {
             paymentLeft: '',
             beginTime: '',
             isModalVisible: false,
-            markBtnEnable: false
+            markBtnEnable: false,
+            clientPhotoShowed: false
         }
     },
     methods: {
@@ -109,14 +110,15 @@ export default {
                 ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
             };
             image.src = data
+            this.clientPhotoShowed = true
         },
         async markVisit() { 
-            const res = await this.$axios.post('http://localhost:3000/v1/mark/markVisit', {
+            await this.$axios.post('http://localhost:3000/v1/mark/markVisit', {
                 sub_number: this.subNumber
             })
-            console.log(res)
         },
         clearInput() {
+            this.clientPhotoShowed = false
             this.markBtnEnable = false
             this.fullName = ''
             this.beginDate = ''

@@ -187,6 +187,8 @@ export default {
                     client: element.client_fio + ' ' + element.phone_number
                 })
             });
+
+            this.subList = this.subList.reverse()
         },
         modalClose() {
             this.modalShow = false

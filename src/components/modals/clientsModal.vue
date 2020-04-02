@@ -46,6 +46,8 @@ import camera from '../frames/Webcam'
 import confirmModal from './confirmModal'
 import { mapGetters } from 'vuex'
 
+import validate from '../../validation/clientValidation'
+
 export default {
     components: {
         camera,
@@ -125,10 +127,12 @@ export default {
             this.$emit('modalClose');
         },
         async addClient() {
-            if(!this.validate()) {
+            var { isCorrect, alertMessage } = validate(this.gridNodes)
+
+            if(!isCorrect) {
+                alert(alertMessage)
                 return
             }
-            this.fillSpaces()
 
             var parms = this.gridNodes.firstVisitDate.split(/[./-]/);
             var postDate = new Date(parms[2], parms[1] - 1, parseInt(parms[0]) + 1);
@@ -154,69 +158,6 @@ export default {
             await this.$axios.get('http://localhost:3000/v1/clients/remove/' + this.gridNodes.id)
             this.$emit('modalClose')
         },
-        validate() {
-            var isCorrect = true
-            var alertString = ''
-
-            if(this.gridNodes.fio.length === 0) {
-                alertString += '• Введите ФИО\n'
-                isCorrect = false
-            } else if(this.gridNodes.fio.length > 100) {
-                alertString += '• Слишком длинное ФИО\n'
-                isCorrect = false
-            }
-
-            if(this.gridNodes.phoneNum.length === 0) {
-                alertString += '• Введите номер телефона\n'
-                isCorrect = false
-            } else if(this.gridNodes.phoneNum.length > 18) {
-                alertString += '• Слишком длинный номер телефона\n'
-                isCorrect = false
-            }
-
-            if(!this.clientPhoto && !this.pictureFromDatabase) {
-                alertString += '• Возможно, стоит сделать снимок\n'
-            }
-
-            if(this.gridNodes.inviterPhone.length > 18) {
-                alertString += '• Слишком длинный номер телефона пригласившего\n'
-                isCorrect = false
-            }
-
-            if(this.gridNodes.howToFind.length > 16) {
-                alertString += "• Слишком длинный пункт 'Откуда узнали' \n"
-                isCorrect = false
-            }
-
-            if(this.gridNodes.note.length > 200) {
-                alertString += "• Слишком длинное примечание \n"
-                isCorrect = false
-            }
-
-            var dateReg = /^\d{2}[./-]\d{2}[./-]\d{4}$/
-            if(this.gridNodes.firstVisitDate.match(dateReg) === null) {
-                alertString += '• Дата не соответствует формату (дд.мм.гггг)'
-                isCorrect = false
-            }
-
-            if(!isCorrect) {
-                alert(alertString)
-            }
-            return isCorrect
-        },
-        fillSpaces() {
-            if(!this.gridNodes.howToFind) {
-                this.gridNodes.howToFind = '-'
-            }
-
-            if(!this.gridNodes.inviterPhone) {
-                this.gridNodes.inviterPhone = '-'
-            }
-
-            if(!this.gridNodes.note) {
-                this.gridNodes.note = '-'
-            }
-        }
     }
 }
 </script>
