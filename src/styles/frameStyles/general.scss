@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,700,900');
+@import url('https://fonts.googleapis.com/css?family=Ubuntu+Condensed');
+
+.main-frame {
+    font-family: 'Ubuntu Condensed', sans-serif;
+    width: 100%;
+    height: calc(100vh - 74px);
+    background: #2f3136;
+    position: relative;
+    color: #adbbbe;
+
+    .user-input {
+        display: flex;
+        justify-content: center;
+        padding: 10px 0px 10px 0px;
+    }
+
+    .search-result-frame {
+        background: #27282c;
+        width: 95%;
+        max-height: 55%;
+        margin: auto;
+        overflow-y: auto;
+        overflow-x: auto;
+
+        .search-result {
+            display: grid;
+
+            .search-result-header {
+                text-align: center;
+            }
+
+            div {
+                padding: 5px 10px;
+                border: 1px solid black;
+            }
+
+            *::selection {
+                background: rgb(255, 1, 1);
+                color: black;
+            }
+        }
+    }
+}

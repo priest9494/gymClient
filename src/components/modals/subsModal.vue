@@ -29,6 +29,7 @@
 
         <div class="edit-buttons-wrapper" v-if="!isAddOperation">
             <button class="change-button" @click="editSub">{{ isEditOperation ? 'Применить' : 'Изменить' }}</button>
+            <button class="extend-button" @click="extendSub">Продлить</button>
             <button class="remove-button" @click="removeSubClicked">Удалить</button>
         </div>
 
@@ -47,12 +48,19 @@
             @modalClose="helperVisible = false"
             @rowChoosed="rowChoosed"
         />
+
+        <extend-modal
+            v-show="extendVisible"
+            @extendClose="extendClose"
+        />
     </div>
 </template>
 
 <script>
 import confirmModal from './confirmModal'
 import helperModal from './addSubHelperModal'
+import extendModal from './extendSubModal'
+
 import { mapGetters } from 'vuex'
 import validate from '../../validation/subValidation'
 
@@ -60,15 +68,16 @@ export default {
     name: 'get-full-info-modal',
     components: {
         confirmModal,
-        helperModal
+        helperModal,
+        'extend-modal': extendModal
     },
     props: {
         gridRows: Array,
-        gridNodes: Object
+        gridNodes: Object,
+        receivedSubNumber: String
     },
     data() {
         return {
-            isEditable: false,
             confirmVisible: false,
             helperVisible: false,
             helperTitle: '',
@@ -78,7 +87,8 @@ export default {
                 clientId: '',
                 trainerId: '',
                 typeId: ''
-            }
+            },
+            extendVisible: false
         }
     },
     methods: {
@@ -87,23 +97,19 @@ export default {
             if(this.currentOptionKey === 'clients') {
                 this.gridNodes.client = choosedNode.fio + '  ' + choosedNode.phoneNum
                 this.choosedId.clientId = choosedNode.id
-                console.log(this.choosedId.clientId)
             }
 
             if(this.currentOptionKey === 'trainers') {
                 this.gridNodes.trainer = choosedNode.fio
                 this.choosedId.trainerId = choosedNode.id
-                console.log(this.choosedId.trainerId)
             }
 
             if(this.currentOptionKey === 'types') {
                 this.gridNodes.type = choosedNode.title + ' ' + choosedNode.training + ' занятий ' + choosedNode.cost + ' руб'
                 this.choosedId.typeId = choosedNode.id
-                console.log(this.choosedId.typeId)
             }
         },
         inputClicked(key) {
-            console.log(key)
             this.searchPanelKey += 1
 
             if(key === 'client') {
@@ -123,9 +129,52 @@ export default {
                 this.helperVisible = true
             }
         },
-        editSub() {
-            if (this.isEditable) {
-                console.log('Сохранено')
+        async editSub() {
+            if (this.isEditOperation) {
+                var { isCorrect, alertMessage } = await validate(this.gridNodes, this.isEditOperation)
+
+                // Если при изменении абонемента номер абонемента не был изменен, проверять уникальность не требуется
+                if(this.gridNodes.subNumber != this.receivedSubNumber) {
+                    let res = await this.$axios.post('http://localhost:3000/v1/subs/checkUniq', {
+                        sub_number: this.gridNodes.subNumber
+                    })
+
+                    if(!res.data) {
+                        alertMessage = '• Такой номер абонемента уже существует\n' + alertMessage
+                        isCorrect = false
+                    }
+                }
+            
+                if(!isCorrect) {
+                    alert(alertMessage)
+                    return
+                }
+
+                var begSplit = this.gridNodes.begDate.split(/[./-]/);
+                var endSplit = this.gridNodes.endDate.split(/[./-]/);
+
+                var begDateToSend = new Date(begSplit[2], begSplit[1] - 1, parseInt(begSplit[0]) + 1);
+                var endDateToSend = new Date(endSplit[2], endSplit[1] - 1, parseInt(endSplit[0]) + 1);
+
+                var clientIdToSend = this.choosedId.clientId ? this.choosedId.clientId : this.gridNodes.clientId
+                var trainerIdToSend = this.choosedId.trainerId ? this.choosedId.trainerId : this.gridNodes.trainerId
+                var typeIdToSend = this.choosedId.typeId ? this.choosedId.typeId : this.gridNodes.typeId
+
+                await this.$axios.post('http://localhost:3000/v1/subs/edit', {
+                    id: this.gridNodes.subId,
+                    sub_number: this.gridNodes.subNumber,
+                    type_id: typeIdToSend,
+                    client_id: clientIdToSend,
+                    trainer_id: trainerIdToSend,
+                    begin_date: begDateToSend,
+                    end_date: endDateToSend,
+                    start_time: this.gridNodes.begTime + ':00',
+                    training_left: this.gridNodes.trainLeft,
+                    left_to_pay: this.gridNodes.payLeft,
+                    note: this.gridNodes.note
+                })
+
+                this.$emit('modalClose');
             }
             this.$store.commit('subsFrame/setIsEditOperation', !this.isEditOperation)
         },
@@ -135,9 +184,24 @@ export default {
         removeSub() {
 
         },
+        extendSub() {
+            this.extendVisible = true
+        },
+        extendClose() {
+            this.extendVisible = false
+        },
         async addSub() {
-            var { isCorrect, alertMessage } = validate(this.gridNodes)
+            var { isCorrect, alertMessage } = await validate(this.gridNodes, this.isEditOperation)
             
+            let res = await this.$axios.post('http://localhost:3000/v1/subs/checkUniq', {
+                sub_number: this.gridNodes.subNumber
+            })
+
+            if(!res.data) {
+                alertMessage = '• Такой номер абонемента уже существует\n' + alertMessage
+                isCorrect = false
+            }
+
             if(!isCorrect) {
                 alert(alertMessage)
                 return
@@ -185,7 +249,6 @@ export default {
                     return item !== 'id'
                 })
             }
-            
         },
         gridNodesToShow: function() {
             var node = {}
@@ -245,7 +308,6 @@ export default {
             display: flex;
             flex-direction: column;
             .user-input {
-                color:white;
                 background: rgba(178, 34, 34, 0);
                 height: 30px;
                 margin-top: 10px;

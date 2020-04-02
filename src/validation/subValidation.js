@@ -1,10 +1,10 @@
 import dateValidation from './dateValidation'
 
-export default function(gridNode) {
+export default async function(gridNode, isEditOperation) {
     var isCorrect = true
     var alertMessage = ''
     //Номер абонемента:
-            // проверить уникальность
+        
     if(!gridNode.subNumber) {
         alertMessage += '• Введите номер абонемента\n'
         isCorrect = false
@@ -64,6 +64,27 @@ export default function(gridNode) {
         isCorrect = false
     }
     
+    if(isEditOperation) {
+        var trainLeftInt = parseInt(gridNode.trainLeft)
+        var payLeftInt = parseInt(gridNode.payLeft)
+
+        if(!gridNode.payLeft) {
+            alertMessage += "• Заполните поле 'Осталось оплатить'\n"
+            isCorrect = false
+        } else if(isNaN(payLeftInt) || payLeftInt < 0 || payLeftInt > 2000000000) {
+            alertMessage += "• Некорректное значение поля 'Осталось оплатить'\n"
+            isCorrect = false
+        }
+
+        if(!gridNode.trainLeft) {
+            alertMessage += "• Заполните поле 'Осталось занятий'\n"
+            isCorrect = false
+        } else if(isNaN(trainLeftInt) || trainLeftInt < 0 || trainLeftInt > 30000) {
+            alertMessage += "• Некорректное значение поля 'Осталось занятий'\n"
+            isCorrect = false
+        }
+    }
+
     if(isCorrect) {
         fillSpaces(gridNode)
     }

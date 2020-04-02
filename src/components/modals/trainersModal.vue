@@ -55,6 +55,7 @@ export default {
                     bdate: postDate
                 })
 
+                this.$emit('modalClose')
             }
             this.isEditable = !this.isEditable
         },

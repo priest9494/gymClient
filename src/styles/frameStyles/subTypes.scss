@@ -1,0 +1,14 @@
+@import './general.scss';
+@import '../buttons.scss';
+@import '../searchPanel.scss';
+
+.search-result {
+    grid-template-columns: repeat(3, 1fr);
+}    
+
+.add-type-wrapper {
+    position: absolute;
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+}
