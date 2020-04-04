@@ -1,24 +1,34 @@
 <template>
-    <div class="info-frame">
-        <div class="info-wrapper">
-            <div class="static-info-rows">
-                <div v-for="k in 3" :key="k"> {{ gridRows[k] }} </div>
-            </div>
-            <div class="dynamic-info-rows">
-                <input :class="{ 'bordered': isEditable || isAddOperation }" type="text" v-model="gridNodes.title" :disabled="!(isEditable || isAddOperation)">
-                <input :class="{ 'bordered': isEditable || isAddOperation }" type="text" v-model="gridNodes.cost" :disabled="!(isEditable || isAddOperation)">
-                <input :class="{ 'bordered': isEditable || isAddOperation }" type="text" v-model="gridNodes.training" :disabled="!(isEditable || isAddOperation)">
-            </div>
+    <div class="main-form">
+        <div class="main-modal">
             <div class="close-button" @click="close">x</div>
-        </div>
-        
-        <div class="edit-button-wrapper" v-if="!isAddOperation">
-            <button class="change-button" @click="editSubType">{{ isEditable ? 'Применить' : 'Изменить' }}</button>
-            <button class="remove-button" @click="removeSubType">Удалить</button>
-        </div>
+            <div class="info-wrapper">
+                <div class="static-info-rows">
+                    <div v-for="item in gridRowsToShow" :key="item">
+                        {{ item }}
+                    </div>
+                </div>
+                <div class="dynamic-info-rows">
+                    <input
+                        class="user-input"
+                        v-for="(value, key) in gridNodesToShow"
+                        :key="key"
+                        type="text"
+                        :class="{ 'bordered': isEditable || isAddOperation }"
+                        :disabled="!(isEditable || isAddOperation)"
+                        v-model="gridNodes[key]"
+                        >
+                </div>
+            </div>
+            
+            <div class="edit-button-wrapper" v-if="!isAddOperation">
+                <button class="edit-type-button" @click="editSubType">{{ isEditable ? 'Применить' : 'Изменить' }}</button>
+                <button class="remove-type-button" @click="removeSubType">Удалить</button>
+            </div>
 
-        <div class="add-button-wrapper" v-if="isAddOperation">
-            <button class="add-button" @click="addSubType">Добавить</button>
+            <div class="add-button-wrapper" v-if="isAddOperation">
+                <button class="add-type-button" @click="addSubType">Добавить</button>
+            </div>
         </div>
     </div>
 </template>
@@ -37,6 +47,20 @@ export default {
             isEditable: false
         }
     },
+    computed: {
+        gridRowsToShow: function() {
+            return this.gridRows.filter(function(item) {
+                return item !== 'id'
+            })
+        },
+        gridNodesToShow: function() {
+            return {
+                title: this.gridNodes.title,
+                cost: this.gridNodes.cost,
+                training: this.gridNodes.training
+            }
+        }
+    },
     methods: {
         close() {
             this.$emit('modalClose')
@@ -53,8 +77,11 @@ export default {
                     cost: this.gridNodes.cost,
                     training: this.gridNodes.training
                 })
+                
+                this.$emit('modalClose')
             }
             this.isEditable = !this.isEditable
+
         },
         async addSubType() {
             if(!this.validate()) {
@@ -111,108 +138,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.info-frame {
-    position: fixed;
-    top: 30%;
-    bottom: 30%;
-    left: 30%;
-    right: 30%;
-    box-shadow: 0 0 100px rgba(0, 0, 0, 0.884);
-    background: #202225;
-    border: 4px solid rgb(234, 230, 236);
-
-    .info-wrapper {
-        position: relative;
-        height: 80%;
-        width: 100%;
-
-        display: flex;
-        align-items: flex-start;
-
-        .static-info-rows {
-            margin: 10px 0px 0px 50px;
-
-            div {
-                display: flex;
-                align-items: center;
-                margin-top: 10px;
-                height: 30px;
-                font-size: 12px;
-            }
-        }
-
-        .dynamic-info-rows {
-            margin: 10px 0px 0px 15px;
-            display: flex;
-            flex-direction: column;
-            input {
-                color:white;
-                background: rgba(178, 34, 34, 0);
-                height: 30px;
-                width: 250px;
-                margin-top: 10px;
-                padding: 0px;
-                border: none;
-                font-size: 12px;
-
-                &.bordered {
-                    border: 1px solid white;
-                    margin-top: 8px;
-                }
-            }
-
-        }
-
-        .close-button {
-            margin-top: 10px;
-            margin-left: auto;
-            margin-right: 20px;
-            font-size: 25px;
-            cursor: pointer;
-        }
-    }
-    .edit-button-wrapper, 
-    .add-button-wrapper {
-        display: flex;
-        justify-content: space-around;
-        margin-bottom: 10px;
-
-        button {
-            background: #adbbbe;
-            padding: 5px 10px 5px 10px;
-            outline: none;
-            font-family: 'Ubuntu Condensed', sans-serif;
-            border: 2px solid rgb(0, 0, 0);
-            cursor: pointer;
-            font-size: 1.2rem;
-            line-height: 1;
-            text-transform: uppercase;
-            font-weight: 400;
-            transition: all 0.3s;
-
-            &:hover,
-            &:focus {
-                background: rgb(200, 248, 188);
-                font-size: 1.25rem;
-            }
-        }
-        .change-button {
-            background: rgb(166, 250, 144);
-            &:hover,
-            &:focus {
-                background: rgb(200, 248, 188);
-            }
-        }
-
-        .remove-button {
-            background: rgb(248, 128, 128);
-            &:hover,
-            &:focus {
-                background: rgb(252, 169, 169);
-            }
-        }
-    }
-    
-}
-
+@import '../../styles/modalStyles/subTypesModal.scss';
 </style>

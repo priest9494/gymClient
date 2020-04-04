@@ -46,6 +46,8 @@ import searchPanel from '../other/searchPanel'
 import clientModal from '../modals/clientsModal'
 import { mapGetters } from 'vuex'
 
+import convert from '../../util/dateConvert'
+
 export default {
     components: {
         'client-modal': clientModal,
@@ -105,7 +107,7 @@ export default {
                 id: '',
                 fio: '',
                 phoneNum: '',
-                firstVisitDate: this.convert(new Date()),
+                firstVisitDate: convert(new Date()),
                 howToFind: '',
                 inviterPhone: '',
                 note: ''
@@ -158,7 +160,7 @@ export default {
                     id: element.id,
                     fio: element.fio,
                     phoneNum: element.phone_number,
-                    firstVisitDate: this.convert(element.first_visit_date),
+                    firstVisitDate: convert(element.first_visit_date),
                     howToFind: element.how_to_find,
                     inviterPhone: element.inviter_phone,
                     note: element.note,
@@ -182,12 +184,6 @@ export default {
         modalClose() {
             this.modalShow = false
             this.search()
-        },
-        convert(str) {
-            var date = new Date(str),
-            mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-            day = ("0" + date.getDate()).slice(-2);
-            return [day, mnth, date.getFullYear()].join(".")
         }
     }
 }

@@ -12,9 +12,8 @@
                 @search="search"
             />
             <div class="helper-body">
-                <div class="search-result" :class="{ 'types': currentOptionKey == 'types'}">
+                <div class="search-result-header" :class="{ 'types': currentOptionKey === 'types'}">
                     <div
-                        class="search-result-header"
                         v-for="item in gridColumns"
                         :key="item"
                     >
@@ -40,6 +39,8 @@
 
 <script>
 import searchPanel from '../other/searchPanel'
+
+import convert from '../../util/dateConvert'
 
 export default {
     components: {
@@ -161,7 +162,7 @@ export default {
                     id: element.id,
                     fio: element.fio,
                     phoneNum: element.phone_number,
-                    firstVisitDate: this.convert(element.first_visit_date),
+                    firstVisitDate: convert(element.first_visit_date),
                     howToFind: element.how_to_find,
                     inviterPhone: element.inviter_phone,
                     note: element.note,
@@ -210,90 +211,16 @@ export default {
                 this.gridNodes.push({
                     id: element.id,
                     fio: element.fio,
-                    dateBirth: this.convert(element.date_birth)
+                    dateBirth: convert(element.date_birth)
                 })
             });
             console.log(res)
             this.gridNodes = this.gridNodes.reverse()
-        },
-        convert(str) {
-            var date = new Date(str),
-            mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-            day = ("0" + date.getDate()).slice(-2);
-            return [day, mnth, date.getFullYear()].join(".")
         }
     }
 }
 </script>
 
 <style lang="scss" scoped>
-.helper-shadow {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.733);
-
-
-    .helper-frame {
-        position: fixed;
-        top: 15%;
-        bottom: 15%;
-        left: 5%;
-        right: 5%;
-        background: #202225;
-        border: 4px solid rgb(234, 230, 236);
-
-        .helper-header {
-            position: relative;
-
-            .helper-title {
-                text-align: center;
-                margin: 20px 0 0 0;
-                font-size: 20px;
-            }
-
-            .close-button {
-                position: absolute;
-                cursor: pointer;
-                top: -15px;
-                right: 20px;
-                font-size: 30px;
-            }
-        }
-
-        .helper-body {
-            margin: 0 5%;
-            overflow-y: auto;
-            overflow-x: auto;
-            max-height: 70%;
-
-            .search-result {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-
-                .search-result-header {
-                    text-align: center;
-                }
-
-                &>div {
-                    padding: 5px 10px;
-                    border: 1px solid black;
-                }
-
-                *::selection {
-                    background: rgb(255, 1, 1);
-                    color: black;
-                }
-
-                &.types {
-                    grid-template-columns: repeat(3, 1fr);
-                }
-            }
-        }
-        
-    }
-}
-
+@import '../../styles/modalStyles/addSubHelperModal.scss'
 </style>

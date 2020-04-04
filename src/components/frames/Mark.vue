@@ -46,6 +46,8 @@
 
 <script>
 import modal from '../modals/confirmModal'
+import trainCase from '../../util/trainingCase'
+import convert from '../../util/dateConvert'
 
 export default {
     components: {
@@ -90,9 +92,9 @@ export default {
             this.markBtnEnable = true
 
             this.fullName = res.data.dbAnswer.fio
-            this.beginDate = this.convert(new Date(res.data.dbAnswer.begin_date))
-            this.endDate = this.convert(new Date(res.data.dbAnswer.end_date))
-            this.type = res.data.dbAnswer.title + ' ' + res.data.dbAnswer.training + ' занятий ' + res.data.dbAnswer.cost + ' рублей'
+            this.beginDate = convert(new Date(res.data.dbAnswer.begin_date))
+            this.endDate = convert(new Date(res.data.dbAnswer.end_date))
+            this.type = res.data.dbAnswer.title + ' ' + res.data.dbAnswer.training + ' ' + trainCase(res.data.dbAnswer.training) + ' ' + res.data.dbAnswer.cost + ' рублей'
             this.paymentLeft = res.data.dbAnswer.left_to_pay
             this.traintngLeft = res.data.dbAnswer.training_left
             this.beginTime = res.data.dbAnswer.start_time
@@ -129,12 +131,6 @@ export default {
             this.traintngLeft = ''
             this.subNumber = ''
             this.beginTime = ''
-        },
-        convert(str) {
-            var date = new Date(str),
-            mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-            day = ("0" + date.getDate()).slice(-2);
-            return [day, mnth, date.getFullYear()].join(".");
         }
     }
 }

@@ -4,7 +4,6 @@
             v-bind:options="gridColumnsToShow"
             @search="search"
         />
-
         <div class="search-result-frame">
             <div class="search-result">
                 <div
@@ -45,6 +44,7 @@
             v-bind:receivedSubNumber="receivedSubNumber"
             v-show="modalShow"
             @modalClose="modalClose"
+            @modalCloseX="modalShow = false"
         />
     </div>
 </template>
@@ -53,6 +53,8 @@
 import searchPanel from '../other/searchPanel'
 import subModal from '../modals/subsModal'
 import { mapGetters } from 'vuex'
+
+import convert from '../../util/dateConvert'
 
 export default {
     components: {
@@ -80,7 +82,6 @@ export default {
                 "ФИО",
                 "Номер телефона",
             ],
-            userInput: '',
             subList: [],
             modalShow: false,
             modalInfo: {},
@@ -122,8 +123,8 @@ export default {
                 phoneNum: '',
                 type: '',
                 trainer: '',
-                begDate: this.convert(new Date()),
-                endDate: this.convert(eDate),
+                begDate: convert(new Date()),
+                endDate: convert(eDate),
                 begTime: '',
                 trainLeft: '',
                 payLeft: '',
@@ -155,7 +156,7 @@ export default {
                     phone_number: userInput
                 })
             }
-
+            console.log(res)
             res.data.forEach(element => {
                 this.subList.push({
                     subId: element.sub_id,
@@ -167,8 +168,8 @@ export default {
                     phoneNum: element.phone_number,
                     type: element.title + ' ' + element.training + ' занятий ' + element.cost + ' рублей',
                     trainer: element.trainer_fio,
-                    begDate: this.convert(element.begin_date),
-                    endDate: this.convert(element.end_date),
+                    begDate: convert(element.begin_date),
+                    endDate: convert(element.end_date),
                     begTime: element.start_time,
                     trainLeft: element.training_left,
                     payLeft: element.left_to_pay,
@@ -182,12 +183,6 @@ export default {
         modalClose() {
             this.modalShow = false
             this.search()
-        },
-        convert(str) {
-            var date = new Date(str),
-            mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-            day = ("0" + date.getDate()).slice(-2);
-            return [day, mnth, date.getFullYear()].join(".");
         }
     }
 }

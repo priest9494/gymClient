@@ -92,6 +92,8 @@ export default {
                     training: element.training,
                 })
             });
+
+            this.subTypesList = this.subTypesList.reverse();
         },
         onRowClicked(idx) {
             this.isAddOperation = false

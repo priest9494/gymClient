@@ -1,43 +1,45 @@
 <template>
-    <div class="info-frame">
-        <div class="close-button" @click="close">x</div>
-
-        <div class="info-wrapper">
-            <div class="static-info-rows">
-                <div v-for="item in gridRowsToShow" :key="item">
-                    {{ item }}
+    <div class="main-form">
+        <div class="main-modal">
+            <div class="close-button" @click="close">x</div>
+            <div class="info-wrapper">
+                <div class="static-info-rows">
+                    <div v-for="item in gridRowsToShow" :key="item">
+                        {{ item }}
+                    </div>
                 </div>
+
+                <div class="dynamic-info-rows">
+                    <input
+                        class="user-input"
+                        v-for="(value, key) in gridNodesToShow"
+                        :key="key"
+                        type="text"
+                        :class="{ 'bordered': isEditOperation || isAddOperation }"
+                        :disabled="!(isEditOperation || isAddOperation)"
+                        v-model="gridNodes[key]"
+                        >
+                </div>
+
+                <camera class="camera" v-bind:videoContent="gridNodes.photo"/>
             </div>
 
-            <div class="dynamic-info-rows">
-                <input
-                v-for="(value, key) in gridNodesToShow"
-                :key="key"
-                type="text"
-                class="user-input"
-                :class="{ 'bordered': isEditOperation || isAddOperation }"
-                :disabled="!(isEditOperation || isAddOperation)"
-                v-model="gridNodes[key]">
+            <div class="add-button-wrapper" v-if="isAddOperation">
+                <button class="add-type-button" @click="addClient">Добавить</button>
             </div>
 
-            <camera class="camera" v-bind:videoContent="gridNodes.photo"/>
-        </div>
+            <div class="edit-button-wrapper" v-if="!isAddOperation">
+                <button class="edit-type-button" @click="editClient">{{ isEditOperation ? 'Применить' : 'Изменить' }}</button>
+                <button class="remove-type-button" @click="removeClientClicked">Удалить</button>
+            </div>
 
-        <div class="add-button-wrapper" v-if="isAddOperation">
-            <button class="add-button" @click="addClient">Добавить</button>
+            <confirmModal
+                v-show="confirmVisible"
+                @agreeClose="removeClient"
+                @disagreeClose="confirmVisible = false"
+                v-bind:questionString="'Удалить клиента?'"
+            />
         </div>
-
-        <div class="edit-buttons-wrapper" v-if="!isAddOperation">
-            <button class="change-button" @click="editClient">{{ isEditOperation ? 'Применить' : 'Изменить' }}</button>
-            <button class="remove-button" @click="removeClientClicked">Удалить</button>
-        </div>
-
-        <confirmModal
-            v-show="confirmVisible"
-            @agreeClose="removeClient"
-            @disagreeClose="confirmVisible = false"
-            v-bind:questionString="'Удалить клиента?'"
-        />
     </div>
 </template>
 
@@ -89,10 +91,12 @@ export default {
     methods: {
         async editClient() {
             if (this.isEditOperation) {
-                if(!this.validate()) {
+                var { isCorrect, alertMessage } = validate(this.gridNodes)
+
+                if(!isCorrect) {
+                    alert(alertMessage)
                     return
                 }
-                this.fillSpaces()
 
                 var parms = this.gridNodes.firstVisitDate.split(/[./-]/);
                 var postDate = new Date(parms[2], parms[1] - 1, parseInt(parms[0]) + 1);
@@ -163,152 +167,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.info-frame {
-    position: fixed;
-    top: 5%;
-    bottom: 5%;
-    left: 15%;
-    right: 15%;
-    box-shadow: 0 0 100px rgba(0, 0, 0, 0.884);
-    background: #202225;
-    border: 4px solid rgb(234, 230, 236);
-    
-    .info-wrapper {
-        position: relative;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-
-        .static-info-rows {
-            margin: 0px 0px 0px 15px;
-            
-            div {
-                display: flex;
-                align-items: center;
-                margin-top: 10px;
-                height: 30px;
-                font-size: 18px;
-            }
-        }
-
-        .dynamic-info-rows {
-            margin: 0px 0px 0px 15px;
-            display: flex;
-            flex-direction: column;
-            .user-input {
-                color:white;
-                background: rgba(178, 34, 34, 0);
-                height: 30px;
-                margin-top: 10px;
-                padding: 0px;
-                padding-left: 5px;
-                background: rgba(178, 34, 34, 0);
-                border: none;
-                color:white;
-                font-size: 16px;
-                width: 300px;
-
-                &.bordered {
-                    border: 1px solid white;
-                    margin-top: 8px;
-                }
-            }
-        }
-
-        .camera {
-            margin-left: 30px;
-        }
-    }
-
-    .close-button {
-        display: flex;
-        padding-right: 30px;
-        padding-top: 5px;
-        justify-content: flex-end;
-        font-size: 35px;
-        cursor: pointer;
-    }
-
-    .edit-buttons-wrapper {
-        display: flex;
-        justify-content: space-around;
-        margin: 40px 150px 0px 150px;
-
-        button {
-            background: #adbbbe;
-            padding: 5px 10px 5px 10px;
-            outline: none;
-            font-family: 'Ubuntu Condensed', sans-serif;
-            border: 2px solid rgb(0, 0, 0);
-            cursor: pointer;
-            font-size: 1.2rem;
-            line-height: 1;
-            text-transform: uppercase;
-            font-weight: 400;
-            transition: all 0.3s;
-
-            &:hover,
-            &:focus {
-                background: rgb(200, 248, 188);
-                font-size: 1.25rem;
-            }
-        }
-        
-        .change-button {
-            background: rgb(166, 250, 144);
-            &:hover,
-            &:focus {
-                background: rgb(200, 248, 188);
-            }
-        }
-
-        .remove-button {
-            background: rgb(248, 128, 128);
-            &:hover,
-            &:focus {
-                background: rgb(252, 169, 169);
-            }
-        }
-    }
-    .add-button-wrapper {
-        display: flex;
-        justify-content: center;
-        margin-top: 40px;
-
-        .add-button {
-            background: #adbbbe;
-            padding: 5px 10px 5px 10px;
-            outline: none;
-            font-family: 'Ubuntu Condensed', sans-serif;
-            border: 2px solid rgb(0, 0, 0);
-            cursor: pointer;
-            font-size: 1.2rem;
-            line-height: 1;
-            text-transform: uppercase;
-            font-weight: 400;
-            transition: all 0.3s;
-
-            &:hover,
-            &:focus {
-                background: rgb(200, 248, 188);
-                font-size: 1.25rem;
-            }
-        }
-    }
-}
-
-@media (max-width: 1300px) {
-    .info-frame {
-        left: 5%;
-        right: 5%;
-
-        .info-wrapper {
-            .dynamic-info-rows {
-                .user-input {
-                    width: 150px;
-                }
-            }
-        }
-    }
-}
+@import '../../styles/modalStyles/clientsModal.scss';
 </style>

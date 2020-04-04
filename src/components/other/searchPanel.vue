@@ -10,7 +10,11 @@
             >
         </div>
 
-        <select class="criterion-select" v-model="searchCriterion">
+        <select
+            class="criterion-select"
+            v-model="searchCriterion"
+            @change="$emit('search', searchCriterion, userInput)"
+        >
             <option v-for="item in options" :key="item">
                 {{ item }}
             </option>

@@ -38,6 +38,8 @@
 import trainersModal from '../modals/trainersModal'
 import searchPanel from '../other/searchPanel'
 
+import convert from '../../util/dateConvert'
+
 export default {
     components: {
         trainersModal,
@@ -74,7 +76,7 @@ export default {
             trainersList: [],
             userInput: '',
             modalShow: false,
-            modalInfo: [],
+            modalInfo: {},
             isAddOperation: false,
             searchOptions: [
                 'ФИО'
@@ -101,7 +103,7 @@ export default {
                 this.trainersList.push({
                     id: element.id,
                     fio: element.fio,
-                    dateBirth: this.convert(element.date_birth)
+                    dateBirth: convert(element.date_birth)
                 })
             });
 
@@ -120,12 +122,6 @@ export default {
             this.isAddOperation = false
             this.modalShow = true
             this.modalInfo = this.trainersList[idx]
-        },
-        convert(str) {
-            var date = new Date(str),
-            mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-            day = ("0" + date.getDate()).slice(-2);
-            return [day, mnth, date.getFullYear()].join(".");
         }
     }
 }

@@ -1,0 +1,81 @@
+@import '../buttons.scss';
+
+.helper-shadow {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.733);
+    z-index: 3;
+
+    .helper-frame {
+        position: fixed;
+        top: 15%;
+        bottom: 15%;
+        left: 5%;
+        right: 5%;
+        background: #202225;
+        border: 4px solid rgb(234, 230, 236);
+
+        .helper-header {
+            position: relative;
+
+            .close-button {
+                position: absolute;
+                cursor: pointer;
+                top: -15px;
+                right: 20px;
+                font-size: 30px;
+            }
+
+            .helper-title {
+                text-align: center;
+                margin: 20px 0 0 0;
+                font-size: 20px;
+            }
+        }
+
+        .helper-body {
+            margin: 0 5%;
+            overflow-y: auto;
+            overflow-x: auto;
+            max-height: 60%;
+
+            .search-result-header {
+                text-align: center;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+
+                &>div {
+                    padding: 5px 10px;
+                    border: 1px solid black;
+                }
+
+                &.types {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+
+            .search-result {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                cursor: pointer;
+                &>div {
+                    padding: 5px 10px;
+                    border: 1px solid black;
+                }
+
+                &.types {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+
+                &:hover,
+                &:focus {
+                    color: #c1cbce;
+                    background: #2b2e31;
+                }
+            }
+        }
+    }
+}
