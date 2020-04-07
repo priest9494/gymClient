@@ -132,14 +132,12 @@ export default {
         },
         search(searchCriterion, userInput) {
             if(this.currentOptionKey === 'clients') {
-                console.log('search client!!')
                 this.searchClient(searchCriterion, userInput)
             } else if(this.currentOptionKey === 'types') {
                 this.searchType(userInput)
             } else {
                 this.searchTrainer(searchCriterion, userInput)
             }
-            //console.log(this.currentOptionKey + ' ' + searchCriterion + ' ' + userInput)
         },
         async searchClient(searchCriterion, userInput) {
             let res
@@ -214,7 +212,6 @@ export default {
                     dateBirth: convert(element.date_birth)
                 })
             });
-            console.log(res)
             this.gridNodes = this.gridNodes.reverse()
         }
     }

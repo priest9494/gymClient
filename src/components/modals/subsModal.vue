@@ -51,7 +51,10 @@
 
             <extend-modal
                 v-show="extendVisible"
+                v-bind:begDate="gridNodes.begDate"
+                v-bind:endDate="gridNodes.endDate"
                 @extendClose="extendClose"
+                @extendConfirmed="extendConfirmed"
             />
         </div>
     </div>
@@ -173,7 +176,8 @@ export default {
                     start_time: this.gridNodes.begTime + ':00',
                     training_left: this.gridNodes.trainLeft,
                     left_to_pay: this.gridNodes.payLeft,
-                    note: this.gridNodes.note
+                    note: this.gridNodes.note,
+                    old_type: this.gridNodes.oldTypeId
                 })
 
                 this.$emit('modalClose');
@@ -190,6 +194,16 @@ export default {
         },
         extendSub() {
             this.extendVisible = true
+        },
+        async extendConfirmed(begDateReplacement, endDateReplacement) {
+            await this.$axios.post('http://localhost:3000/v1/subs/extend', {
+                id: this.gridNodes.subId,
+                beg_date: begDateReplacement,
+                end_date: endDateReplacement
+            })
+
+            this.extendVisible = false
+            this.$emit('modalClose')
         },
         extendClose() {
             this.extendVisible = false

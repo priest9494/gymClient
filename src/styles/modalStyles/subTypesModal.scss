@@ -74,11 +74,16 @@
             }
         }
     
-        .edit-button-wrapper,
-        .add-button-wrapper {
+        .edit-button-wrapper {
             display: flex;
             justify-content: space-between;
             margin: 25px 15%;
+        }
+        
+        .add-button-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 25px 0;
         }
     }
 }

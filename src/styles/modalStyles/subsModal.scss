@@ -71,25 +71,23 @@
             }
         }
     
-        .edit-button-wrapper,
-        .add-button-wrapper {
+        .edit-button-wrapper {
             display: flex;
             justify-content: space-between;
             margin: 25px 15%;
+        }
+
+        .add-button-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 25px 0;
         }
     }
 }
 @media (max-width: 1200px) {
     .main-form {
-        .main-modal {
-            .info-wrapper {
-                .dynamic-info-rows {
-                    .user-input {
-                        width: 150px;
-                    }
-                }
-            }
-        }
+        left: 20%;
+        right: 20%;
     }
 }
 

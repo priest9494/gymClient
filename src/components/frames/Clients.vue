@@ -37,6 +37,7 @@
             v-bind:gridNodes="modalInfo"
             v-show="modalShow"
             @modalClose="modalClose"
+            @modalCloseX="modalShow = false"
         />
     </div>
 </template>

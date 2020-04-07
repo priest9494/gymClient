@@ -156,7 +156,7 @@ export default {
                     phone_number: userInput
                 })
             }
-            console.log(res)
+
             res.data.forEach(element => {
                 this.subList.push({
                     subId: element.sub_id,
@@ -170,11 +170,12 @@ export default {
                     trainer: element.trainer_fio,
                     begDate: convert(element.begin_date),
                     endDate: convert(element.end_date),
-                    begTime: element.start_time,
+                    begTime: element.start_time,    
                     trainLeft: element.training_left,
                     payLeft: element.left_to_pay,
                     note: element.note,
-                    client: element.client_fio + ' ' + element.phone_number
+                    client: element.client_fio + ' ' + element.phone_number,
+                    oldTypeId: element.type_id,
                 })
             });
 

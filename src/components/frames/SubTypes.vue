@@ -33,6 +33,7 @@
         v-bind:isAddOperation="isAddOperation"
         v-show="modalShow"
         @modalClose="modalClose"
+        @modalCloseX="modalShow = false"
         />
     </div>
 </template>

@@ -35,6 +35,8 @@
 
 
 <script>
+import validate from '../../validation/subTypesValidation'
+
 export default {
     name: 'get-full-info-modal',
     props: {
@@ -63,11 +65,14 @@ export default {
     },
     methods: {
         close() {
-            this.$emit('modalClose')
+            this.$emit('modalCloseX')
         },
         async editSubType() {
             if (this.isEditable) {
-                if(!this.validate()) {
+                var { isCorrect, alertMessage } = validate(this.gridNodes)
+
+                if(!isCorrect) {
+                    alert(alertMessage)
                     return
                 }
 
@@ -84,7 +89,10 @@ export default {
 
         },
         async addSubType() {
-            if(!this.validate()) {
+            var { isCorrect, alertMessage } = validate(this.gridNodes)
+
+            if(!isCorrect) {
+                alert(alertMessage)
                 return
             }
 
@@ -99,39 +107,6 @@ export default {
         async removeSubType() {
             await this.$axios.get('http://localhost:3000/v1/types/remove/' + this.gridNodes.id)
             this.$emit('modalClose')
-        },
-        validate() {
-            var isCorrect = true
-            var costInt = parseInt(this.gridNodes.cost)
-            var trainingInt = parseInt(this.gridNodes.training)
-
-            if(this.gridNodes.title.length === 0) {
-                alert('Введите наименование')
-                isCorrect = false
-            }
-
-            if(this.gridNodes.title.length > 50) {
-                alert('Слишком длинное наименование')
-                isCorrect = false
-            }
-
-            if(this.gridNodes.cost.length === 0) {
-                alert('Введите стоимость')
-                isCorrect = false
-            } else if(isNaN(costInt) || costInt < 0 || costInt > 2000000000) {
-                alert('Некорректная стоимость')
-                isCorrect = false
-            }
-
-            if(this.gridNodes.training.length === 0) {
-                alert('Введите количество занятий')
-                isCorrect = false
-            } else if(isNaN(trainingInt) || trainingInt < 0 || trainingInt > 30000) {
-                alert('Некорректное количество занятий')
-                isCorrect = false
-            }
-
-            return isCorrect
         }
     }
 }

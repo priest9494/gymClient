@@ -1,7 +1,7 @@
 <template>
     <div class="main-form">
         <div class="main-modal">
-            <div class="close-button" @click="close">x</div>
+            <div class="close-button" @click="$emit('modalCloseX')">x</div>
             <div class="info-wrapper">
                 <div class="static-info-rows">
                     <div v-for="item in gridRowsToShow" :key="item">
@@ -72,9 +72,6 @@ export default {
         }
     },
     methods: {
-        close() {
-            this.$emit('modalClose')
-        },
         async editTrainer() {
             if (this.isEditable) {
                 var { isCorrect, alertMessage } = validate(this.gridNodes)

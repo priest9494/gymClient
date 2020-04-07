@@ -128,7 +128,7 @@ export default {
             this.$store.commit('clientsFrame/setIsPictureTaken', false)
             this.$store.commit('clientsFrame/setClientPhoto', '')
 
-            this.$emit('modalClose');
+            this.$emit('modalCloseX');
         },
         async addClient() {
             var { isCorrect, alertMessage } = validate(this.gridNodes)
