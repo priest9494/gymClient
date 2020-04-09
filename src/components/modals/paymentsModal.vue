@@ -1,7 +1,7 @@
 <template>
     <div class="main-form">
         <div class="main-modal">
-            <div class="close-button" @click="$emit('modalCloseX')">x</div>
+            <div class="close-button" @click="close">x</div>
             <div class="info-wrapper">
                 <div class="static-info-rows">
                     <div v-for="item in gridRowsToShow" :key="item">
@@ -17,18 +17,28 @@
                         :class="{ 'bordered': isEditable || isAddOperation }"
                         :disabled="!(isEditable || isAddOperation)"
                         v-model="gridNodes[key]"
-                        >
+                        @click="clientInputClicked(key)"
+                    >
+                    <select class="method-select" v-model="selectedMethod" v-if="isAddOperation">
+                        <option>нал</option>
+                        <option>б/н</option>
+                    </select>
                 </div>
             </div>
             
             <div class="edit-button-wrapper" v-if="!isAddOperation">
-                <button class="edit-type-button" @click="editPayment">{{ isEditable ? 'Применить' : 'Изменить' }}</button>
-                <button class="remove-type-button" @click="removeSubType">Удалить</button>
+                <button class="remove-type-button" @click="removePayment">Удалить</button>
             </div>
 
             <div class="add-button-wrapper" v-if="isAddOperation">
                 <button class="add-type-button" @click="addPayment">Добавить</button>
             </div>
+
+            <sub-choose-helper
+                v-show="helperVisible"
+                @rowChoosed="subChoosed"
+                @heplerCloseX="helperVisible = false"
+            />  
         </div>
     </div>
 </template>
@@ -36,8 +46,12 @@
 
 <script>
 import validate from '../../validation/paymentsValidation'
+import subChooseHelper from './subChooseHelper'
 
 export default {
+    components: {
+        'sub-choose-helper': subChooseHelper
+    },
     props: {
         gridRows: Array,
         gridNodes: Object,
@@ -45,86 +59,76 @@ export default {
     },
     data() {
         return {
-            isEditable: false
+            isEditable: false,
+            helperVisible: false,
+            choosedSub: {},
+            selectedMethod: 'нал'
         }
     },
     computed: {
         gridRowsToShow: function() {
-            if(this.isAddOperation) {
-                return this.gridRows.filter(function(item) {
-                    return item !== 'id' && item !== 'ФИО'
-                })
-            } else {
-                return this.gridRows.filter(function(item) {
-                    return item !== 'id'
-                })
-            }
-            
+            return this.gridRows.filter(function(item) {
+                return item !== 'id' && item !== 'ФИО' && item !== 'Номер абонемента'
+            })
         },
         gridNodesToShow: function() {
             var showObj = {}
-
-            showObj.subNumber = this.gridNodes.subNumber
-            if(!this.isAddOperation) {
-                showObj.fio = this.gridNodes.fio
-            }
+            showObj.sub = this.gridNodes.sub
             showObj.paymentDate = this.gridNodes.paymentDate
             showObj.paymentAmount = this.gridNodes.paymentAmount
-            showObj.paymentMethod = this.gridNodes.paymentMethod
+
+            if(!this.isAddOperation) {
+                showObj.paymentMethod = this.gridNodes.paymentMethod
+            }
             
             return showObj
         }
     },
     methods: {
-        async editPayment() {
-            if (this.isEditable) {
-                var { isCorrect, alertMessage } = validate(this.gridNodes)
-
-                if(!isCorrect) {
-                    alert(alertMessage)
-                    return
-                }
-
-                await this.$axios.post('http://localhost:3000/v1/types/edit', {
-                    sub_number: this.gridNodes.subNumber,
-                    title: this.gridNodes.title,
-                    cost: this.gridNodes.cost,
-                    training: this.gridNodes.training
-                })
-                
-                this.$emit('modalClose')
+        subChoosed(sub) {
+            this.choosedSub = sub
+            this.helperVisible = false
+            this.gridNodes.sub = sub.subNumber + ' ' + sub.fio
+        },
+        clientInputClicked(key) {
+            if(key === 'sub') {
+                this.helperVisible = true
             }
-            this.isEditable = !this.isEditable
-
+        },
+        close() {
+            this.isEditable = false
+            this.$emit('modalCloseX')
         },
         async addPayment() {
             var { isCorrect, alertMessage } = validate(this.gridNodes)
 
+            console.log(this.selectedMethod)
             if(!isCorrect) {
                 alert(alertMessage)
                 return
             }
 
             let isExists = await this.$axios.post('http://localhost:3000/v1/payments/isExists', {
-                sub_number: this.gridNodes.subNumber
+                sub_number: this.choosedSub.subNumber
             })
-            console.log(isExists)
             if(!isExists.data) {
                 alert('Номер абонемента не существует')
                 return
             }
 
             await this.$axios.post('http://localhost:3000/v1/payments/add', {
-                sub_number: this.gridNodes.subNumber,
+                sub_number: this.choosedSub.subNumber,
                 payment_date: this.gridNodes.paymentDate,
                 payment_amount: this.gridNodes.paymentAmount,
-                payment_method: this.gridNodes.paymentMethod
+                payment_method: this.selectedMethod
             })
 
             this.$emit('modalClose')
         },
-        async removeSubType() {
-            await this.$axios.get('http://localhost:3000/v1/types/remove/' + this.gridNodes.id)
+        async removePayment() {
+            await this.$axios.post('http://localhost:3000/v1/payments/remove', {
+                id: this.gridNodes.id
+            })
             this.$emit('modalClose')
         }
     }
@@ -132,5 +136,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/modalStyles/subTypesModal.scss';
+@import '../../styles/modalStyles/paymentsModal.scss';
 </style>

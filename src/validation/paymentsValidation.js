@@ -4,11 +4,8 @@ export default function(gridNode) {
     var isCorrect = true
     var alertMessage = ''
 
-    if(!gridNode.subNumber) {
-        alertMessage += '• Введите номер абонемента\n'
-        isCorrect = false
-    } else if(gridNode.subNumber.length > 13) {
-        alertMessage += '• Слишком длинный номер абонемента\n'
+    if(!gridNode.sub) {
+        alertMessage += '• Выберите абонемент\n'
         isCorrect = false
     }
 
@@ -25,14 +22,6 @@ export default function(gridNode) {
         isCorrect = false
     } else if (gridNode.paymentAmount < 0 || gridNode.paymentAmount > 2000000000) {
         alertMessage += '• Некорректная сумма оплаты\n'
-        isCorrect = false
-    }
-
-    if(!gridNode.paymentMethod) {
-        alertMessage += '• Введите сумму оплаты\n'
-        isCorrect = false
-    } else if (gridNode.paymentMethod.length > 3) {
-        alertMessage += "• Слишком длинный способ оплаты (может быть 'нал' или 'б/н')\n"
         isCorrect = false
     }
 

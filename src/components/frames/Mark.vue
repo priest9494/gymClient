@@ -68,7 +68,8 @@ export default {
             isModalVisible: false,
             markBtnEnable: false,
             clientPhotoShowed: false,
-            note: ''
+            note: '',
+            subId: ''
         }
     },
     methods: {
@@ -102,6 +103,7 @@ export default {
             this.traintngLeft = res.data.dbAnswer.training_left
             this.beginTime = res.data.dbAnswer.start_time
             this.note = res.data.dbAnswer.note
+            this.subId = res.data.dbAnswer.sub_id
 
             let ratio = (window.innerHeight < window.innerWidth) ? 16/9 : 9/16
             const canvas = document.querySelector('canvas')
@@ -121,7 +123,7 @@ export default {
         },
         async markVisit() { 
             await this.$axios.post('http://localhost:3000/v1/mark/markVisit', {
-                sub_number: this.subNumber
+                id: this.subId
             })
         },
         clearInput() {
@@ -135,6 +137,7 @@ export default {
             this.traintngLeft = ''
             this.subNumber = ''
             this.beginTime = ''
+            this.note = ''
         }
     }
 }

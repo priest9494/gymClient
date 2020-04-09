@@ -121,7 +121,6 @@ export default {
                 this.currentOptionKey = 'clients'
                 this.helperTitle = 'Выберите клиента'
                 this.helperVisible = true
-                
             }
             if(key === 'type') {
                 this.currentOptionKey = 'types'

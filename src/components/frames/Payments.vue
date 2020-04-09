@@ -56,6 +56,7 @@ export default {
             gridColumns: [
                 'id',
                 'ФИО',
+                'Абонемент',
                 'Номер абонемента',
                 'Дата оплаты',
                 'Сумма',
@@ -80,15 +81,18 @@ export default {
         async search(searchCriterion, userInput) {
             let res
             this.paymentsList = [];
-
-            if(userInput && userInput === 'Номер абонемента') {
+            if(!userInput) {
+                res = await this.$axios.get('http://localhost:3000/v1/payments/getLatest')
+            } else if(userInput && searchCriterion === 'Номер абонемента') {
                 res = await this.$axios.post('http://localhost:3000/v1/payments/findBySubNumber', {
-                    title: userInput
+                    sub_number: userInput
                 })
             } else {
-                res = await this.$axios.get('http://localhost:3000/v1/payments/getLatest')
+                res = await this.$axios.post('http://localhost:3000/v1/payments/findByFio', {
+                    fio: userInput
+                })
             }
-            
+
             res.data.forEach(element => {
                 this.paymentsList.push({
                     id: element.payment_id,
@@ -96,7 +100,8 @@ export default {
                     fio: element.fio,
                     paymentDate: convert(element.payment_date),
                     paymentAmount: element.payment_amount,
-                    paymentMethod: element.payment_method
+                    paymentMethod: element.payment_method,
+                    sub: element.sub_number + ' ' + element.fio
                 })
             });
 
@@ -112,6 +117,7 @@ export default {
             this.isAddOperation = true
             this.modalInfo = {
                 id: '',
+                sub: '',
                 subNumber: '',
                 fio: '',
                 paymentDate: convert(new Date()),
@@ -123,7 +129,7 @@ export default {
     computed: {
         gridColumnsToShow: function() {
             return this.gridColumns.filter(function(item) {
-                return item !== 'id' && item !=='Дата оплаты' && item !== 'Метод'
+                return item !== 'id' && item !=='Дата оплаты' && item !== 'Метод' && item !== 'Абонемент'
             })
         },
         paymentsToShow: function() {
@@ -143,5 +149,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/frameStyles/subTypes.scss';
+@import '../../styles/frameStyles/payments.scss';
 </style>

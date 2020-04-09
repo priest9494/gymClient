@@ -9,12 +9,11 @@
 }
 
 .search-result {
-    grid-template-columns: repeat(2, 1fr);
-}    
+    grid-template-columns: repeat(4, 1fr);
+}
 
-.add-trainer-wrapper {
+.report-button-wrapper {
     position: absolute;
-    top: 75%;
-    left: 50%;
-    transform: translate(-50%, -50%); 
+    bottom: 10%;
+    left: 5%;
 }

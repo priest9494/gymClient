@@ -9,6 +9,7 @@ import SubTypes from './components/frames/SubTypes.vue'
 import Trainers from './components/frames/Trainers.vue'
 import Clients from './components/frames/Clients.vue'
 import Payments from './components/frames/Payments.vue'
+import Report from './components/frames/Report.vue'
 
 import {store} from './store';
 
@@ -23,7 +24,8 @@ const routes = [
   { path: '/subTypes', component: SubTypes },
   { path: '/clients', component: Clients },
   { path: '/trainers', component: Trainers },
-  { path: '/payments', component: Payments }
+  { path: '/payments', component: Payments },
+  { path: '/report', component: Report }
 ]
 
 const router = new VueRouter({
