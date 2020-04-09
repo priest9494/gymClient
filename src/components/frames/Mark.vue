@@ -16,6 +16,7 @@
                     <div>Время начала</div>
                     <div>Осталось занятий</div>
                     <div>Осталось оплатить</div>
+                    <div>Примечание</div>
                 </div>
                 <div class="nodes">
                     <div>{{ fullName }}</div>
@@ -25,6 +26,7 @@
                     <div>{{ beginTime }}</div>
                     <div>{{ traintngLeft }}</div>
                     <div>{{ paymentLeft }}</div>
+                    <div>{{ note }}</div>
                 </div>
                 <canvas class="user-photo" v-show="clientPhotoShowed"></canvas>
             </div>
@@ -65,7 +67,8 @@ export default {
             beginTime: '',
             isModalVisible: false,
             markBtnEnable: false,
-            clientPhotoShowed: false
+            clientPhotoShowed: false,
+            note: ''
         }
     },
     methods: {
@@ -98,6 +101,7 @@ export default {
             this.paymentLeft = res.data.dbAnswer.left_to_pay
             this.traintngLeft = res.data.dbAnswer.training_left
             this.beginTime = res.data.dbAnswer.start_time
+            this.note = res.data.dbAnswer.note
 
             let ratio = (window.innerHeight < window.innerWidth) ? 16/9 : 9/16
             const canvas = document.querySelector('canvas')

@@ -4,7 +4,7 @@ export default function(gridNode) {
     var isCorrect = true
     var alertMessage = ''
 
-    if(gridNode.fio.length === 0) {
+    if(!gridNode.fio) {
         alertMessage += '• Введите ФИО\n'
         isCorrect = false
     } else if(gridNode.fio.length > 100) {

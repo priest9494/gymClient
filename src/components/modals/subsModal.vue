@@ -203,7 +203,7 @@ export default {
             })
 
             this.extendVisible = false
-            this.$emit('modalClose')
+            this.$emit('modalClose') 
         },
         extendClose() {
             this.extendVisible = false

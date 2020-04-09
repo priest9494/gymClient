@@ -60,7 +60,6 @@ export default {
                 var ed = new Date(endSplit[2], endSplit[1] - 1, endSplit[0]).getTime()
 
                 var newDate = new Date(ed + ed - bd)
-
                 var mnth = ("0" + (newDate.getMonth() + 1)).slice(-2)
                 var day = ("0" + newDate.getDate()).slice(-2)
                 return [day, mnth, newDate.getFullYear()].join(".")
@@ -82,10 +81,6 @@ export default {
         },
         accept() {
             this.$emit('extendConfirmed', this.begValidated, this.endValidated)
-            console.log('extend___________________')
-            console.log(this.begValidated)
-            console.log(this.endValidated)
-            console.log('_________________________')
             this.confirmVisible = false
         }
     }
