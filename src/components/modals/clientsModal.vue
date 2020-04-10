@@ -8,7 +8,6 @@
                         {{ item }}
                     </div>
                 </div>
-
                 <div class="dynamic-info-rows">
                     <input
                         class="user-input"
@@ -33,7 +32,7 @@
                 <button class="remove-type-button" @click="removeClientClicked">Удалить</button>
             </div>
 
-            <confirmModal
+            <confirm-modal
                 v-show="confirmVisible"
                 @agreeClose="removeClient"
                 @disagreeClose="confirmVisible = false"
@@ -53,7 +52,7 @@ import validate from '../../validation/clientValidation'
 export default {
     components: {
         camera,
-        confirmModal
+        'confirm-modal': confirmModal
     },
     name: 'get-full-info-modal',
     props: {

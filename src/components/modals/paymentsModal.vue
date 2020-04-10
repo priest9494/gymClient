@@ -27,7 +27,7 @@
             </div>
             
             <div class="edit-button-wrapper" v-if="!isAddOperation">
-                <button class="remove-type-button" @click="removePayment">Удалить</button>
+                <button class="remove-type-button" @click="confirmVisible = true">Удалить</button>
             </div>
 
             <div class="add-button-wrapper" v-if="isAddOperation">
@@ -38,7 +38,14 @@
                 v-show="helperVisible"
                 @rowChoosed="subChoosed"
                 @heplerCloseX="helperVisible = false"
-            />  
+            />
+
+            <confirm-modal
+                v-show="confirmVisible"
+                @agreeClose="removePayment"
+                @disagreeClose="confirmVisible = false"
+                v-bind:questionString="'Удалить оплату?'"
+            />
         </div>
     </div>
 </template>
@@ -47,10 +54,12 @@
 <script>
 import validate from '../../validation/paymentsValidation'
 import subChooseHelper from './subChooseHelper'
+import confirmModal from './confirmModal'
 
 export default {
     components: {
-        'sub-choose-helper': subChooseHelper
+        'sub-choose-helper': subChooseHelper,
+        'confirm-modal': confirmModal
     },
     props: {
         gridRows: Array,
@@ -62,7 +71,8 @@ export default {
             isEditable: false,
             helperVisible: false,
             choosedSub: {},
-            selectedMethod: 'нал'
+            selectedMethod: 'нал',
+            confirmVisible: false
         }
     },
     computed: {
