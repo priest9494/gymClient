@@ -2,7 +2,7 @@
     <div class="main-frame">
         <search-panel
             v-bind:options="searchOptions"
-            @search="search"
+            @search="setUserInput"
         />
 
         <div class="search-result-frame">
@@ -60,6 +60,7 @@ export default {
             ],
             subTypesList: [],
             userInput: '',
+            searchCriterion: '',
             modalShow: false,
             modalInfo: {},
             isAddOperation: false,
@@ -69,17 +70,22 @@ export default {
         }
     },
     methods: {
+        setUserInput(searchCriterion, userInput) {
+            this.userInput = userInput
+            this.searchCriterion = searchCriterion
+            this.search()
+        },
         modalClose() {
             this.modalShow = false;
             this.search()
         },
-        async search(searchCriterion, userInput) {
+        async search() {
             let res
             this.subTypesList = [];
 
-            if(userInput) {
+            if(this.userInput) {
                 res = await this.$axios.post('http://localhost:3000/v1/types/findByTitle', {
-                    title: userInput
+                    title: this.userInput
                 })
             } else {
                 res = await this.$axios.get('http://localhost:3000/v1/types/getLatest')

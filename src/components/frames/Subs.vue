@@ -2,7 +2,7 @@
     <div class="main-frame">
         <search-panel
             v-bind:options="gridColumnsToShow"
-            @search="search"
+            @search="setUserInput"
         />
         <div class="search-result-frame">
             <div class="search-result">
@@ -63,7 +63,7 @@ export default {
     },
     data() {
         return {
-            searchCriterion: 'Номер абонемента',
+            searchCriterion: '',
             gridColumns: [
                 "id",
                 "Номер абонемента",
@@ -85,7 +85,8 @@ export default {
             subList: [],
             modalShow: false,
             modalInfo: {},
-            receivedSubNumber: ''
+            receivedSubNumber: '',
+            userInput: '',
         }
     },
     created() {
@@ -109,6 +110,11 @@ export default {
         }
     },
     methods: {
+        setUserInput(searchCriterion, userInput) {
+            this.userInput = userInput
+            this.searchCriterion = searchCriterion
+            this.search()
+        },
         addSub() {
             this.$store.commit('subsFrame/setIsAddOperation', true)
             this.modalShow = true
@@ -136,24 +142,24 @@ export default {
             this.receivedSubNumber = this.subList[idx].subNumber
             this.modalShow = true
         },
-        async search(searchCriterion, userInput) {
+        async search() {
             let res
 
             this.subList = [];
 
-            if(!userInput) {
+            if(!this.userInput) {
                 res = await this.$axios.get('http://localhost:3000/v1/subs/getLatest')
-            } else if(searchCriterion === 'Номер абонемента') {
+            } else if(this.searchCriterion === 'Номер абонемента') {
                 res = await this.$axios.post('http://localhost:3000/v1/subs/getSubBySubNumber', {
-                    sub_number: userInput
+                    sub_number: this.userInput
                 })
-            } else if(searchCriterion === 'ФИО') {
+            } else if(this.searchCriterion === 'ФИО') {
                 res = await this.$axios.post('http://localhost:3000/v1/subs/getSubByFio', {
-                    fio: userInput
+                    fio: this.userInput
                 })
             } else {
                 res = await this.$axios.post('http://localhost:3000/v1/subs/getSubByPhoneNumber', {
-                    phone_number: userInput
+                    phone_number: this.userInput
                 })
             }
 

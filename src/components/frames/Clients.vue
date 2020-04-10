@@ -2,7 +2,7 @@
     <div class="main-frame">
         <search-panel
             v-bind:options="searchOptions"
-            @search="search"
+            @search="setUserInput"
         />
         
         <div class="search-result-frame">
@@ -71,7 +71,9 @@ export default {
             ],
             clientList: [],
             modalShow: false,
-            modalInfo: {}
+            modalInfo: {},
+            userInput: '',
+            searchCriterion: ''
         }
     },
     computed: {
@@ -99,6 +101,11 @@ export default {
         this.search()
     },
     methods: {
+        setUserInput(searchCriterion, userInput) {
+            this.userInput = userInput
+            this.searchCriterion = searchCriterion
+            this.search()
+        },
         addClient() {
             this.$store.commit('clientsFrame/setIsAddOperation', true)
             this.$store.commit('clientsFrame/setIsPictureTaken', false)
@@ -139,18 +146,17 @@ export default {
             this.modalShow = true
             this.modalInfo = this.clientList[idx]
         },
-        async search(searchCriterion, userInput) {
+        async search() {
             let res
             this.clientList = []
-            console.log(searchCriterion + '   ' + userInput)
 
-            if(searchCriterion === 'ФИО' && userInput) {
+            if(this.searchCriterion === 'ФИО' && this.userInput) {
                 res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByFio', {
-                    fio: userInput
+                    fio: this.userInput
                 })
-            } else if(userInput){
+            } else if(this.userInput){
                 res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByPhoneNumber', {
-                    phone_number: userInput
+                    phone_number: this.userInput
                 })
             } else {
                 res = await this.$axios.get('http://localhost:3000/v1/clients/getLatest')

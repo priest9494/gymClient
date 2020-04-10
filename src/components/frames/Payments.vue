@@ -2,7 +2,7 @@
     <div class="main-frame">
         <search-panel
             v-bind:options="searchOptions"
-            @search="search"
+            @search="setUserInput"
         />
 
         <div class="search-result-frame">
@@ -63,33 +63,39 @@ export default {
                 'Метод'
             ],
             paymentsList: [],
-            userInput: '',
             modalShow: false,
             modalInfo: {},
             isAddOperation: false,
             searchOptions: [
                 'Номер абонемента',
                 'ФИО'
-            ]
+            ],
+            userInput: '',
+            searchCriterion: ''
         }
     },
     methods: {
+        setUserInput(searchCriterion, userInput) {
+            this.userInput = userInput
+            this.searchCriterion = searchCriterion
+            this.search()
+        },
         modalClose() {
             this.modalShow = false;
             this.search()
         },
-        async search(searchCriterion, userInput) {
+        async search() {
             let res
             this.paymentsList = [];
-            if(!userInput) {
+            if(!this.userInput) {
                 res = await this.$axios.get('http://localhost:3000/v1/payments/getLatest')
-            } else if(userInput && searchCriterion === 'Номер абонемента') {
+            } else if(this.userInput && this.searchCriterion === 'Номер абонемента') {
                 res = await this.$axios.post('http://localhost:3000/v1/payments/findBySubNumber', {
-                    sub_number: userInput
+                    sub_number: this.userInput
                 })
             } else {
                 res = await this.$axios.post('http://localhost:3000/v1/payments/findByFio', {
-                    fio: userInput
+                    fio: this.userInput
                 })
             }
 

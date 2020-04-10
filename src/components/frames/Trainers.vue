@@ -2,7 +2,7 @@
     <div class="main-frame">
         <search-panel
             v-bind:options="searchOptions"
-            @search="search"
+            @search="setUserInput"
         />
         <div class="search-result-frame">
             <div class="search-result">
@@ -76,6 +76,7 @@ export default {
             ],
             trainersList: [],
             userInput: '',
+            searchCriterion: '',
             modalShow: false,
             modalInfo: {},
             isAddOperation: false,
@@ -85,18 +86,23 @@ export default {
         }
     },
     methods: {
+        setUserInput(searchCriterion, userInput) {
+            this.userInput = userInput
+            this.searchCriterion = searchCriterion
+            this.search()
+        },
         modalClose() {
             this.modalShow = false;
             this.search()
         },
-        async search(searchCriterion, userInput) {
+        async search() {
             let res
             this.trainersList = [];
-            if(!userInput) {
+            if(!this.userInput) {
                 res = await this.$axios.get('http://localhost:3000/v1/trainers/getLatest')
             } else {
                 res = await this.$axios.post('http://localhost:3000/v1/trainers/findByFio', {
-                    fio: userInput
+                    fio: this.userInput
                 })
             }
 
