@@ -4,40 +4,24 @@
             <div class="search-container">
                 <input class="search-input" type="text" placeholder="Номер абонемента" @input="getSub" v-model="subNumber">
             </div>
-
         </div>
         <div class="user-output-wrapper">
             <div class="user-output">
-                <div>
-                    <div>ФИО</div>
-                    <div>Тип</div>
-                    <div>Дата начала</div>
-                    <div>Дата окончания</div>
-                    <div>Время начала</div>
-                    <div>Осталось занятий</div>
-                    <div>Осталось оплатить</div>
-                    <div>Примечание</div>
+                <div class="static-info">
+                    <div v-for="item in gridColumns" :key="item">{{ item }}</div>
                 </div>
-                <div class="nodes">
-                    <div>{{ fullName }}</div>
-                    <div>{{ type }}</div>
-                    <div>{{ beginDate }}</div>
-                    <div>{{ endDate }}</div>
-                    <div>{{ beginTime }}</div>
-                    <div>{{ traintngLeft }}</div>
-                    <div>{{ paymentLeft }}</div>
-                    <div>{{ note }}</div>
+                <div class="dynamic-info">
+                    <div v-for="node in gridNodes" :key="node">{{ node }}</div>
                 </div>
                 <canvas class="user-photo" v-show="clientPhotoShowed"></canvas>
             </div>
         </div>
-        
         <div class="user-buttons-wrapper">
             <button class = "accept-type-button" @click="showModal" :disabled="!markBtnEnable">Отметить</button>
             <button class = "cancel-type-button" @click="clearInput" :disabled="!markBtnEnable">Не отмечать</button>
         </div>
         
-        <modal
+        <confirm-modal
             v-show="isModalVisible"
             @agreeClose="agreeCloseModal"
             @disagreeClose="disagreeCloseModal"
@@ -47,28 +31,31 @@
 </template>
 
 <script>
-import modal from '../modals/confirmModal'
+import confirmModal from '../modals/confirmModal'
 import trainCase from '../../util/trainingCase'
 import convert from '../../util/dateConvert'
 
 export default {
     components: {
-        modal,  
+        'confirm-modal': confirmModal,  
     },
     data() {
-        return { 
+        return {
+            gridColumns: [
+                'ФИО',
+                'Тип',
+                'Дата начала',
+                'Дата окончания',
+                'Время начала',
+                'Осталось занятий',
+                'Осталось оплатить',
+                'Примечание'
+            ],
+            gridNodes: {},
             subNumber: '',
-            fullName: '',
-            beginDate: '',
-            endDate: '',
-            type: '',
-            traintngLeft: '', 
-            paymentLeft: '',
-            beginTime: '',
             isModalVisible: false,
             markBtnEnable: false,
             clientPhotoShowed: false,
-            note: '',
             subId: ''
         }
     },
@@ -95,14 +82,14 @@ export default {
 
             this.markBtnEnable = true
 
-            this.fullName = res.data.dbAnswer.fio
-            this.beginDate = convert(new Date(res.data.dbAnswer.begin_date))
-            this.endDate = convert(new Date(res.data.dbAnswer.end_date))
-            this.type = res.data.dbAnswer.title + ' ' + res.data.dbAnswer.training + ' ' + trainCase(res.data.dbAnswer.training) + ' ' + res.data.dbAnswer.cost + ' рублей'
-            this.paymentLeft = res.data.dbAnswer.left_to_pay
-            this.traintngLeft = res.data.dbAnswer.training_left
-            this.beginTime = res.data.dbAnswer.start_time
-            this.note = res.data.dbAnswer.note
+            this.gridNodes.fullName = res.data.dbAnswer.fio
+            this.gridNodes.type = res.data.dbAnswer.title + ' ' + res.data.dbAnswer.training + ' ' + trainCase(res.data.dbAnswer.training) + ' ' + res.data.dbAnswer.cost + ' рублей'
+            this.gridNodes.beginDate = convert(new Date(res.data.dbAnswer.begin_date))
+            this.gridNodes.endDate = convert(new Date(res.data.dbAnswer.end_date))
+            this.gridNodes.beginTime = res.data.dbAnswer.start_time
+            this.gridNodes.trainingLeft = res.data.dbAnswer.training_left
+            this.gridNodes.paymentLeft = res.data.dbAnswer.left_to_pay
+            this.gridNodes.note = res.data.dbAnswer.note
             this.subId = res.data.dbAnswer.sub_id
 
             let ratio = (window.innerHeight < window.innerWidth) ? 16/9 : 9/16
@@ -129,15 +116,9 @@ export default {
         clearInput() {
             this.clientPhotoShowed = false
             this.markBtnEnable = false
-            this.fullName = ''
-            this.beginDate = ''
-            this.endDate = ''
-            this.type = ''
-            this.paymentLeft = ''
-            this.traintngLeft = ''
+            this.gridNodes = {}
+            this.subId = ''
             this.subNumber = ''
-            this.beginTime = ''
-            this.note = ''
         }
     }
 }

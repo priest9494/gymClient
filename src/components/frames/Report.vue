@@ -22,9 +22,8 @@
             </div>
         </div>
         <div class="search-result-frame">
-            <div class="search-result">
+            <div class="search-result-header">
                 <div
-                    class="search-result-header"
                     v-for="item in gridColumns"
                     :key="item"
                 >

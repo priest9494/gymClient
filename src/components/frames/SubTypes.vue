@@ -6,8 +6,8 @@
         />
 
         <div class="search-result-frame">
-            <div class="search-result">
-                <div v-for="node in gridColumnsToShow" :key="node" class="search-result-header">
+            <div class="search-result-header">
+                <div v-for="node in gridColumnsToShow" :key="node">
                     {{ node }}
                 </div>
             </div>

@@ -4,10 +4,30 @@
 .main-frame {
     font-family: 'Ubuntu Condensed', sans-serif;
     width: 100%;
-    height: calc(100vh - 74px);
+    height: calc(100vh - 73px);
     background: #2f3136;
     position: relative;
     color: #adbbbe;
+
+    /* width */
+    ::-webkit-scrollbar {
+        width: 15px;
+    }
+    
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+    
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
 
     .user-input {
         display: flex;
@@ -23,22 +43,30 @@
         overflow-y: auto;
         overflow-x: auto;
 
+        .search-result-header {
+            text-align: center;
+            display: grid;
+        
+            &>div {
+                padding: 5px 10px;
+                border: 1px solid black;
+            }
+        }
+
         .search-result {
             display: grid;
-
-            .search-result-header {
-                text-align: center;
-            }
+            cursor: pointer;
 
             div {
                 padding: 5px 10px;
                 border: 1px solid black;
                 overflow-x: hidden;
             }
-
-            *::selection {
-                background: rgb(255, 1, 1);
-                color: black;
+            
+            &:hover,
+            &:focus {
+                color: #c1cbce;
+                background: #2b2e31;
             }
         }
     }

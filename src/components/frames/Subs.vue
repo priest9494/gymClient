@@ -5,9 +5,8 @@
             @search="setUserInput"
         />
         <div class="search-result-frame">
-            <div class="search-result">
+            <div class="search-result-header">
                 <div
-                    class="search-result-header"
                     v-for="item in gridColumnsToShow"
                     :key="item"
                 >

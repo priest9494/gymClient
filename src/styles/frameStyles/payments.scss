@@ -5,6 +5,10 @@
 .main-frame {
     .search-result-frame {
         width: 80%;
+
+        .search-result-header {
+            grid-template-columns: repeat(3, 1fr);
+        } 
     }
 }
 

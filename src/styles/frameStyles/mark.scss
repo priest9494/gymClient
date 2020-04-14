@@ -15,19 +15,30 @@
         font-size: 19px;
         display: flex;
 
-        .nodes {
+        .static-info {
+            display: flex;
+            flex-direction: column;
+
+            div {
+                margin-bottom: 10px;
+            }
+        }
+
+        .dynamic-info {
+            display: flex;
+            flex-direction: column;
             margin-left: 50px;
             margin-right: 20px;
             min-width: 300px;
+
+            div {
+                margin-bottom: 10px;
+            }
         }
 
         .user-photo {
             box-shadow: 4px 4px 12px 0px black;
             max-width: 300px;
-        }
-
-        div > div {
-            margin-bottom: 10px;
         }
     }
 }
@@ -35,11 +46,12 @@
 .user-buttons-wrapper {
     display: flex;
     justify-content: center;
-    margin-top: 50px;
+    margin-top: 30px;
 
     button {
         margin: 0 40px;
-
+        padding: 15px 40px;
+        
         &:disabled {
             color: black;
         }

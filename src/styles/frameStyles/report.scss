@@ -30,6 +30,7 @@
     .search-result-frame {
         width: 80%;
 
+        .search-result-header,
         .search-result {
             grid-template-columns: repeat(4, 1fr);
         }

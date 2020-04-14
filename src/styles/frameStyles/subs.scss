@@ -4,33 +4,31 @@
 .main-frame {
     .search-result-frame {
         width: 80%;
+
+        .search-result-header {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .search-result {
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
-}
 
-.search-result {
-    grid-template-columns: repeat(3, 1fr);
-}  
+    .add-sub-wrapper {
+        position: absolute;
+        top: 75%;
+        left: 50%;
+        transform: translate(-50%, -50%); 
+    }
 
-.user-input {
-    display: flex;
-    justify-content: center;
-    padding: 10px 0px 10px 0px;
-}
+    .goto-sub-types-wrapper {
+        bottom: 10%;
+        position: absolute;
+        right: 5%;
 
-.add-sub-wrapper {
-    position: absolute;
-    top: 75%;
-    left: 50%;
-    transform: translate(-50%, -50%); 
-}
-
-.goto-sub-types-wrapper {
-    bottom: 10%;
-    position: absolute;
-    right: 5%;
-}
-
-.goto-sub-types {
-    font-size: 1.5rem;
-    height: 50px;
+        .goto-sub-types {
+            font-size: 1.5rem;
+            height: 50px;
+        }
+    }
 }
