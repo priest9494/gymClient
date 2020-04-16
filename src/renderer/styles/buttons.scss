@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,700,900');
+@import url('https://fonts.googleapis.com/css?family=Ubuntu+Condensed');
+@import url('https://fonts.googleapis.com/css?family=Bellota+Text&display=swap');
+
+
+button {
+    outline: none;
+    font-family: 'Bellota Text', cursive;
+    border: 1px solid rgb(0, 0, 0);
+    cursor: pointer;
+    font-size: 1.3rem;
+    line-height: 1;
+    font-weight: 300;
+    transition: all 0.3s;
+}
+
+.add-type-button {
+    background: rgb(117, 117, 117);
+    border: none;
+    box-shadow: 2px 2px 5px rgb(0, 0, 0);
+    font-size: 1.1rem;
+    padding: 15px 30px;
+}
+
+.edit-type-button {
+    background: rgb(77, 77, 61);
+}
+
+.remove-type-button {
+    background: red;
+}
+
+.accept-type-button {
+    background: rgb(68, 121, 70);
+    border-radius: 40px;
+    border: 1px solid rgb(0, 0, 0);
+    &:focus, 
+    &:hover {
+        background: rgb(92, 153, 94);
+    }
+}
+
+.cancel-type-button {
+    background: rgb(110, 64, 64);
+    border-radius: 40px;
+    &:focus, 
+    &:hover {
+        background: rgb(138, 82, 82);
+    }
+}
+
+.extend-type-button {
+    background: hotpink;
+}
+
+.confirm-add-type-button {
+    background: rgb(117, 117, 117);
+    border: none;
+    font-size: 1rem;
+    padding: 10px 25px;
+}
+
+.report-type-button {
+
+}
+
+.goto-types-type-button {
+    
+}

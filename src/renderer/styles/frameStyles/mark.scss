@@ -1,0 +1,87 @@
+@import './general.scss';
+@import '../buttons.scss';
+@import '../searchPanel.scss';
+
+@import url('https://fonts.googleapis.com/css?family=Spectral&display=swap');
+.search-container {
+    margin-top: 25px;
+}
+
+.user-output-wrapper {
+    display: flex;
+    margin-left: 20%;
+    .user-output {
+        margin-top: 25px;
+        font-size: 19px;
+        display: flex;
+
+        font-family: Verdana, sans-serif;
+        .static-info {
+            display: flex;
+            flex-direction: column;
+            white-space: nowrap;
+            overflow: hidden;
+            div {
+                margin-bottom: 10px;
+            }
+        }
+
+        .dynamic-info {
+            display: flex;
+            flex-direction: column;
+            margin-left: 50px;
+            margin-right: 20px;
+            color: rgb(238, 236, 236);
+            font-weight: 100;
+            white-space: nowrap;
+            max-width: 40%;
+            overflow: hidden;
+            div {
+                margin-bottom: 10px;
+            }
+        }
+
+        .user-photo {
+            box-shadow: 4px 4px 12px 0px black;
+            max-width: 350px;
+            max-height: 250px;
+        }
+    }
+}
+
+.user-buttons-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+
+    button {
+        margin: 0 40px;
+        padding: 15px 40px;
+        
+        &:disabled {
+            color: black;
+        }
+    }
+}
+
+@media (max-width: 1180px) {
+    .user-output-wrapper {
+        margin-left: 5%;
+    }
+}
+
+@media (max-width: 1000px) {
+    .user-output-wrapper {
+        margin-left: 5%;
+
+        .user-output {
+            .dynamic-info { 
+               max-width: 300px;
+            }
+            .user-photo {
+                max-width: 150px;
+            }
+        }
+    }
+
+}
