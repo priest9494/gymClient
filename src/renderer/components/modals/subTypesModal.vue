@@ -1,33 +1,35 @@
 <template>
-    <div class="main-form">
-        <div class="main-modal">
-            <div class="close-button" @click="close">x</div>
-            <div class="info-wrapper">
-                <div class="static-info-rows">
-                    <div v-for="item in gridRowsToShow" :key="item">
-                        {{ item }}
+    <div class="main-shadow">
+        <div class="main-form">
+            <div class="main-modal">
+                <div class="close-button" @click="close">x</div>
+                <div class="info-wrapper">
+                    <div class="static-info-rows">
+                        <div v-for="item in gridRowsToShow" :key="item">
+                            {{ item }}
+                        </div>
+                    </div>
+                    <div class="dynamic-info-rows">
+                        <input
+                            class="user-input"
+                            v-for="(value, key) in gridNodesToShow"
+                            :key="key"
+                            type="text"
+                            :class="{ 'bordered': isEditable || isAddOperation }"
+                            :disabled="!(isEditable || isAddOperation)"
+                            v-model="gridNodes[key]"
+                            >
                     </div>
                 </div>
-                <div class="dynamic-info-rows">
-                    <input
-                        class="user-input"
-                        v-for="(value, key) in gridNodesToShow"
-                        :key="key"
-                        type="text"
-                        :class="{ 'bordered': isEditable || isAddOperation }"
-                        :disabled="!(isEditable || isAddOperation)"
-                        v-model="gridNodes[key]"
-                        >
+                
+                <div class="edit-button-wrapper" v-if="!isAddOperation">
+                    <button class="edit-type-button" @click="editSubType">{{ isEditable ? 'Применить' : 'Изменить' }}</button>
+                    <button class="remove-type-button" @click="removeSubType">Удалить</button>
                 </div>
-            </div>
-            
-            <div class="edit-button-wrapper" v-if="!isAddOperation">
-                <button class="edit-type-button" @click="editSubType">{{ isEditable ? 'Применить' : 'Изменить' }}</button>
-                <button class="remove-type-button" @click="removeSubType">Удалить</button>
-            </div>
 
-            <div class="add-button-wrapper" v-if="isAddOperation">
-                <button class="confirm-add-type-button" @click="addSubType">Добавить</button>
+                <div class="add-button-wrapper" v-if="isAddOperation">
+                    <button class="confirm-add-type-button" @click="addSubType">Добавить</button>
+                </div>
             </div>
         </div>
     </div>

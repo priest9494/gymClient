@@ -1,61 +1,63 @@
 <template>
-    <div class="main-form">
-        <div class="main-modal">
-            <div class="close-button" @click="close">x</div>
-            <div class="info-wrapper">
-                <div class="static-info-rows">
-                    <div v-for="item in gridRowsToShow" :key="item">
-                        {{ item }}
+    <div class="main-shadow">
+        <div class="main-form">
+            <div class="main-modal">
+                <div class="close-button" @click="close">x</div>
+                <div class="info-wrapper">
+                    <div class="static-info-rows">
+                        <div v-for="item in gridRowsToShow" :key="item">
+                            {{ item }}
+                        </div>
+                    </div>
+
+                    <div class="dynamic-info-rows">
+                        <input
+                            class="user-input"
+                            v-for="(value, key) in gridNodesToShow"
+                            :key="key"
+                            type="text"
+                            :class="{ 'bordered': isEditOperation || isAddOperation }"
+                            :disabled="!(isEditOperation || isAddOperation)"
+                            v-model="gridNodes[key]"
+                            @click="inputClicked(key)"
+                        >
                     </div>
                 </div>
 
-                <div class="dynamic-info-rows">
-                    <input
-                        class="user-input"
-                        v-for="(value, key) in gridNodesToShow"
-                        :key="key"
-                        type="text"
-                        :class="{ 'bordered': isEditOperation || isAddOperation }"
-                        :disabled="!(isEditOperation || isAddOperation)"
-                        v-model="gridNodes[key]"
-                        @click="inputClicked(key)"
-                    >
+                <div class="add-button-wrapper" v-if="isAddOperation">
+                    <button class="confirm-add-type-button" @click="addSub">Добавить</button>
                 </div>
+
+                <div class="edit-button-wrapper" v-if="!isAddOperation">
+                    <button class="edit-type-button" @click="editSub">{{ isEditOperation ? 'Применить' : 'Изменить' }}</button>
+                    <button class="extend-type-button" @click="extendSub">Продлить</button>
+                    <button class="remove-type-button" @click="removeSubClicked">Удалить</button>
+                </div>
+
+                <confirmModal
+                    v-show="confirmVisible"
+                    @agreeClose="removeSub"
+                    @disagreeClose="confirmVisible = false"
+                    v-bind:questionString="'Удалить абонемент?'"
+                />
+
+                <helperModal
+                    v-show="helperVisible"
+                    v-bind:helperTitle="helperTitle"
+                    v-bind:currentOptionKey="currentOptionKey"
+                    :key="searchPanelKey"
+                    @modalClose="helperVisible = false"
+                    @rowChoosed="rowChoosed"
+                />
+
+                <extend-modal
+                    v-show="extendVisible"
+                    v-bind:begDate="gridNodes.begDate"
+                    v-bind:endDate="gridNodes.endDate"
+                    @extendClose="extendClose"
+                    @extendConfirmed="extendConfirmed"
+                />
             </div>
-
-            <div class="add-button-wrapper" v-if="isAddOperation">
-                <button class="confirm-add-type-button" @click="addSub">Добавить</button>
-            </div>
-
-            <div class="edit-button-wrapper" v-if="!isAddOperation">
-                <button class="edit-type-button" @click="editSub">{{ isEditOperation ? 'Применить' : 'Изменить' }}</button>
-                <button class="extend-type-button" @click="extendSub">Продлить</button>
-                <button class="remove-type-button" @click="removeSubClicked">Удалить</button>
-            </div>
-
-            <confirmModal
-                v-show="confirmVisible"
-                @agreeClose="removeSub"
-                @disagreeClose="confirmVisible = false"
-                v-bind:questionString="'Удалить абонемент?'"
-            />
-
-            <helperModal
-                v-show="helperVisible"
-                v-bind:helperTitle="helperTitle"
-                v-bind:currentOptionKey="currentOptionKey"
-                :key="searchPanelKey"
-                @modalClose="helperVisible = false"
-                @rowChoosed="rowChoosed"
-            />
-
-            <extend-modal
-                v-show="extendVisible"
-                v-bind:begDate="gridNodes.begDate"
-                v-bind:endDate="gridNodes.endDate"
-                @extendClose="extendClose"
-                @extendConfirmed="extendConfirmed"
-            />
         </div>
     </div>
 </template>

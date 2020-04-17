@@ -1,45 +1,48 @@
 <template>
-    <div class="main-form">
-        <div class="main-modal">
-            <div class="close-button" @click="close">x</div>
-            <div class="info-wrapper">
-                <div class="static-info-rows">
-                    <div v-for="item in gridRowsToShow" :key="item">
-                        {{ item }}
+    <div class="main-shadow">
+        <div class="main-form">
+            <div class="main-modal">
+                <div class="close-button" @click="close">x</div>
+                <div class="info-wrapper">
+                    <div class="static-info-rows">
+                        <div v-for="item in gridRowsToShow" :key="item">
+                            {{ item }}
+                        </div>
                     </div>
+                    <div class="dynamic-info-rows">
+                        <input
+                            class="user-input"
+                            v-for="(value, key) in gridNodesToShow"
+                            :key="key"
+                            type="text"
+                            :class="{ 'bordered': isEditOperation || isAddOperation }"
+                            :disabled="!(isEditOperation || isAddOperation)"
+                            v-model="gridNodes[key]"
+                            >
+                    </div>
+
+                    <camera class="camera" v-bind:videoContent="gridNodes.photo"/>
                 </div>
-                <div class="dynamic-info-rows">
-                    <input
-                        class="user-input"
-                        v-for="(value, key) in gridNodesToShow"
-                        :key="key"
-                        type="text"
-                        :class="{ 'bordered': isEditOperation || isAddOperation }"
-                        :disabled="!(isEditOperation || isAddOperation)"
-                        v-model="gridNodes[key]"
-                        >
+
+                <div class="add-button-wrapper" v-if="isAddOperation">
+                    <button class="confirm-add-type-button" @click="addClient">Добавить</button>
                 </div>
 
-                <camera class="camera" v-bind:videoContent="gridNodes.photo"/>
-            </div>
+                <div class="edit-button-wrapper" v-if="!isAddOperation">
+                    <button class="edit-type-button" @click="editClient">{{ isEditOperation ? 'Применить' : 'Изменить' }}</button>
+                    <button class="remove-type-button" @click="removeClientClicked">Удалить</button>
+                </div>
 
-            <div class="add-button-wrapper" v-if="isAddOperation">
-                <button class="confirm-add-type-button" @click="addClient">Добавить</button>
+                <confirm-modal
+                    v-show="confirmVisible"
+                    @agreeClose="removeClient"
+                    @disagreeClose="confirmVisible = false"
+                    v-bind:questionString="'Удалить клиента?'"
+                />
             </div>
-
-            <div class="edit-button-wrapper" v-if="!isAddOperation">
-                <button class="edit-type-button" @click="editClient">{{ isEditOperation ? 'Применить' : 'Изменить' }}</button>
-                <button class="remove-type-button" @click="removeClientClicked">Удалить</button>
-            </div>
-
-            <confirm-modal
-                v-show="confirmVisible"
-                @agreeClose="removeClient"
-                @disagreeClose="confirmVisible = false"
-                v-bind:questionString="'Удалить клиента?'"
-            />
         </div>
     </div>
+    
 </template>
 
 <script>
