@@ -18,9 +18,9 @@ function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 600,
+    height: 650,
     useContentSize: true,
-    width: 1000,
+    width: 1366,
     minWidth: 800,
     minHeight: 600,
     title: 'CHAMPION GYM'

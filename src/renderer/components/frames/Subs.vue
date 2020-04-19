@@ -32,7 +32,7 @@
         </div>
         <div class="goto-sub-types-wrapper">
             <router-link to="/subTypes">
-                <button class="goto-sub-types">
+                <button class="goto-types-type-button">
                     В раздел "Виды абонементов"
                 </button>
             </router-link>
@@ -53,6 +53,7 @@ import searchPanel from '../other/searchPanel'
 import subModal from '../modals/subsModal'
 import { mapGetters } from 'vuex'
 
+import trainCase from '../../util/trainingCase'
 import convert from '../../util/dateConvert'
 
 export default {
@@ -171,7 +172,7 @@ export default {
                     subNumber: element.sub_number,
                     fio: element.client_fio,
                     phoneNum: element.phone_number,
-                    type: element.title + ' ' + element.training + ' занятий ' + element.cost + ' рублей',
+                    type: element.title + ' ' + element.training + ' ' + trainCase(element.training) + ' ' + element.cost + ' рублей',
                     trainer: element.trainer_fio,
                     begDate: convert(element.begin_date),
                     endDate: convert(element.end_date),

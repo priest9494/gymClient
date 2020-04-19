@@ -5,9 +5,6 @@
         @search="setSearchInput"
         />
         <div class="date-pick-wrapper">
-            <div class="date-pick-header">
-                <div>Выберите диапазон дат</div>
-            </div>
             <div class="date-pick-body">
                 <div>От</div>
                 <input :value="begSearchDate" :disabled="dateRange !== 'Ручной ввод'" @input="begDateInputChanged">
@@ -42,7 +39,7 @@
             </div>
         </div>
         <div class="report-button-wrapper">
-            <button>Отчет "Начисления при продаже"</button>
+            <button class="report-type-button">Отчет "Начисления при продаже"</button>
         </div>
 
     </div>

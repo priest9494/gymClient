@@ -82,14 +82,14 @@ export default {
             if(!res.data.dbAnswer) {
                 return
             }
-
+            var timeToShow = res.data.dbAnswer.start_time.split(':');
             this.markBtnEnable = true
 
             this.gridNodes.fullName = res.data.dbAnswer.fio
             this.gridNodes.type = res.data.dbAnswer.title + ' ' + res.data.dbAnswer.training + ' ' + trainCase(res.data.dbAnswer.training) + ' ' + res.data.dbAnswer.cost + ' рублей'
             this.gridNodes.beginDate = convert(new Date(res.data.dbAnswer.begin_date))
             this.gridNodes.endDate = convert(new Date(res.data.dbAnswer.end_date))
-            this.gridNodes.beginTime = res.data.dbAnswer.start_time
+            this.gridNodes.beginTime = timeToShow[0] + ':' + timeToShow[1]
             this.gridNodes.trainingLeft = res.data.dbAnswer.training_left
             this.gridNodes.paymentLeft = res.data.dbAnswer.left_to_pay
             this.gridNodes.note = res.data.dbAnswer.note

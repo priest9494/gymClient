@@ -24,12 +24,19 @@
                 
                 <div class="edit-button-wrapper" v-if="!isAddOperation">
                     <button class="edit-type-button" @click="editSubType">{{ isEditable ? 'Применить' : 'Изменить' }}</button>
-                    <button class="remove-type-button" @click="removeSubType">Удалить</button>
+                    <button class="remove-type-button" @click="confirmVisible = true">Удалить</button>
                 </div>
 
                 <div class="add-button-wrapper" v-if="isAddOperation">
                     <button class="confirm-add-type-button" @click="addSubType">Добавить</button>
                 </div>
+
+                <confirm-modal
+                    v-show="confirmVisible"
+                    @agreeClose="removeSubType"
+                    @disagreeClose="confirmVisible = false"
+                    v-bind:questionString="'Удалить вид абонемента?'"
+                />
             </div>
         </div>
     </div>
@@ -37,10 +44,13 @@
 
 
 <script>
+import confirmModal from './confirmModal'
 import validate from '../../validation/subTypesValidation'
 
 export default {
-    name: 'get-full-info-modal',
+    components: {
+        'confirm-modal': confirmModal
+    },
     props: {
         gridRows: Array,
         gridNodes: Object,
@@ -48,7 +58,8 @@ export default {
     },
     data() {
         return {
-            isEditable: false
+            isEditable: false,
+            confirmVisible: false
         }
     },
     computed: {
@@ -107,6 +118,8 @@ export default {
             this.$emit('modalClose')
         },
         async removeSubType() {
+            this.confirmVisible = false
+            
             await this.$axios.get('http://localhost:3000/v1/types/remove/' + this.gridNodes.id)
             this.$emit('modalClose')
         }

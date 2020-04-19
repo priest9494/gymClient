@@ -36,7 +36,7 @@
             v-bind:gridNodes="modalInfo"
             v-show="modalShow"
             @modalClose="modalClose"
-            @modalCloseX="modalShow = false"
+            @modalCloseX="modalCloseX"
         />
     </div>
 </template>
@@ -189,7 +189,12 @@ export default {
         },
         modalClose() {
             this.modalShow = false
+            this.$store.commit('clientsFrame/setClientPhoto', '')
             this.search()
+        },
+        modalCloseX() {
+            this.modalShow = false
+            this.$store.commit('clientsFrame/setClientPhoto', '')
         }
     }
 }

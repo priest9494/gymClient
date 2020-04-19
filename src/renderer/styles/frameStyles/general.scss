@@ -42,11 +42,11 @@
         margin: auto;
         overflow-y: auto;
         overflow-x: auto;
-
+        font-family: Verdana, sans-serif;
         .search-result-header {
             text-align: center;
             display: grid;
-        
+            color: white;
             &>div {
                 padding: 5px 10px;
                 border: 1px solid black;

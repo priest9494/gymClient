@@ -2,7 +2,6 @@
 @import '../buttons.scss';
 @import '../searchPanel.scss';
 
-@import url('https://fonts.googleapis.com/css?family=Spectral&display=swap');
 .search-container {
     margin-top: 25px;
 }
@@ -10,12 +9,13 @@
 .user-output-wrapper {
     display: flex;
     margin-left: 20%;
+
     .user-output {
         margin-top: 25px;
         font-size: 19px;
         display: flex;
-
         font-family: Verdana, sans-serif;
+
         .static-info {
             display: flex;
             flex-direction: column;
@@ -34,7 +34,7 @@
             color: rgb(238, 236, 236);
             font-weight: 100;
             white-space: nowrap;
-            max-width: 40%;
+            max-width: 400px;
             overflow: hidden;
             div {
                 margin-bottom: 10px;
@@ -51,17 +51,10 @@
 
 .user-buttons-wrapper {
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
     margin-top: 30px;
-
-    button {
-        margin: 0 40px;
-        padding: 15px 40px;
-        
-        &:disabled {
-            color: black;
-        }
-    }
 }
 
 @media (max-width: 1180px) {

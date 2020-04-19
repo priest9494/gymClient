@@ -138,6 +138,8 @@ export default {
             this.$emit('modalClose')
         },
         async removePayment() {
+            this.confirmVisible = false
+            
             await this.$axios.post('http://localhost:3000/v1/payments/remove', {
                 id: this.gridNodes.id
             })

@@ -100,6 +100,8 @@ export default {
             this.confirmVisible = true
         },
         async removeTrainer() {
+            this.confirmVisible = false
+            
             await this.$axios.get('http://localhost:3000/v1/trainers/remove/' + this.gridNodes.id)
             this.$emit('modalClose')
         },

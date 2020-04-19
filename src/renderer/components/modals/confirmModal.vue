@@ -1,3 +1,19 @@
+<template>
+    <div class="confirm-shadow">
+        <div class="confirm-main">
+            <div class="confrim-title">
+                <div>
+                    {{ questionString }}
+                </div>
+            </div>
+            <div class="confirm-body">
+                <div class="accept"  @click="closeWithAgree">Да</div>
+                <div class="cancel" @click="closeWithoutAgree">Нет</div>
+            </div>
+        </div>
+    </div>
+</template>
+
 <script>
     export default {
     props: {
@@ -13,53 +29,11 @@
         },
     },
 };
-
+/* @click="closeWithAgree"
+@click="closeWithoutAgree" */
 </script>
-<template>
-    <transition name="modal-fade">
-        <div class="modal-backdrop">
-            <div
-                class="modal"
-                role="dialog"
-                aria-labelledby="modalTitle"
-                aria-describedby="modalDescription"
-            >
-            <header
-                class="modal-header"
-                id="modalTitle"
-            >
-                <slot name="header">
-                    {{ questionString }}
-                </slot>
-            </header>
-            <section
-                class="modal-body"
-                id="modalDescription"
-            >
-                <slot name="body">
-                    <button
-                        type="button"
-                        class="btn-agree"
-                        @click="closeWithAgree"
-                        aria-label="Close modal"
-                    >
-                        Да
-                    </button>
-                    <button
-                        type="button"
-                        class="btn-disagree"
-                        @click="closeWithoutAgree"
-                        aria-label="Close modal"
-                    >
-                        Нет
-                    </button>
-                </slot>
-            </section>
-            </div>
-        </div>
-    </transition>
-</template>
 
-<style>
+<style lang="scss" scoped>
 @import '../../styles/modalStyles/confirmModal.scss';
 </style>
+

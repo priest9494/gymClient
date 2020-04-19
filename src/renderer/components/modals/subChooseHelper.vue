@@ -38,6 +38,7 @@
 <script>
 import searchPanel from '../other/searchPanel'
 import convert from '../../util/dateConvert'
+import trainCase from '../../util/trainingCase'
 
 export default {
     components: {
@@ -112,7 +113,7 @@ export default {
                     subNumber: element.sub_number,
                     fio: element.client_fio,
                     phoneNum: element.phone_number,
-                    type: element.title + ' ' + element.training + ' занятий ' + element.cost + ' рублей',
+                    type: element.title + ' ' + element.training + ' ' + trainCase(element.training) + ' ' + element.cost + ' рублей',
                     trainer: element.trainer_fio,
                     begDate: convert(element.begin_date),
                     endDate: convert(element.end_date),
