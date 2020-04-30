@@ -68,7 +68,7 @@ export default async function(gridNode, isEditOperation) {
         var trainLeftInt = parseInt(gridNode.trainLeft)
         var payLeftInt = parseInt(gridNode.payLeft)
 
-        if(!gridNode.payLeft) {
+        if(!gridNode.payLeft === '') {
             alertMessage += "• Заполните поле 'Осталось оплатить'\n"
             isCorrect = false
         } else if(isNaN(payLeftInt) || payLeftInt < 0 || payLeftInt > 2000000000) {
@@ -76,7 +76,7 @@ export default async function(gridNode, isEditOperation) {
             isCorrect = false
         }
 
-        if(!gridNode.trainLeft) {
+        if(gridNode.trainLeft === '') {
             alertMessage += "• Заполните поле 'Осталось занятий'\n"
             isCorrect = false
         } else if(isNaN(trainLeftInt) || trainLeftInt < 0 || trainLeftInt > 30000) {

@@ -11,14 +11,15 @@
                     <div v-for="item in gridColumns" :key="item">{{ item }}</div>
                 </div>
                 <div class="dynamic-info">
-                    <div v-for="node in gridNodes" :key="node">{{ node }}</div>
+                    <div v-for="(node, idx) in gridNodes" :key="idx" v-if="idx != 'note'">{{ gridNodes[idx] }}</div>
+                    <div class="note-linebreaker">{{ gridNodes['note'] }}</div>
                 </div>
                 <canvas class="user-photo" v-show="clientPhotoShowed"></canvas>
             </div>
         </div>
         <div class="user-buttons-wrapper">
-            <button class = "accept-type-button" @click="showModal" :disabled="!markBtnEnable">Отметить</button>
-            <button class = "cancel-type-button" @click="clearInput" :disabled="!markBtnEnable">Не отмечать</button>
+            <button class ="accept-type-button" @click="showModal" :disabled="!markBtnEnable">Отметить</button>
+            <button class ="cancel-type-button" @click="clearInput" :disabled="!markBtnEnable">Не отмечать</button>
         </div>
         
         <confirm-modal
