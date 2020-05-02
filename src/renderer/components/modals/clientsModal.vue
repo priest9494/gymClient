@@ -18,7 +18,16 @@
                             :class="{ 'bordered': isEditOperation || isAddOperation }"
                             :disabled="!(isEditOperation || isAddOperation)"
                             v-model="gridNodes[key]"
-                            >
+                            v-show="!((key === 'firstVisitDate') && (isAddOperation || isEditOperation))"
+                        >
+                        </input>
+                        <div v-show="(isEditOperation || isAddOperation)" class="date-pick-wrapper">
+                            <date-picker
+                                v-model="pickedDate"
+                                type="date"
+                                @input="datePicked"
+                            />
+                        </div>
                     </div>
 
                     <camera class="camera" v-bind:videoContent="gridNodes.photo"/>
@@ -46,6 +55,9 @@
 </template>
 
 <script>
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
+
 import camera from '../frames/Webcam'
 import confirmModal from './confirmModal'
 import { mapGetters } from 'vuex'
@@ -55,7 +67,8 @@ import validate from '../../validation/clientValidation'
 export default {
     components: {
         camera,
-        'confirm-modal': confirmModal
+        'confirm-modal': confirmModal,
+        'date-picker': DatePicker
     },
     name: 'get-full-info-modal',
     props: {
@@ -68,6 +81,17 @@ export default {
         }
     },
     computed: {
+        pickedDate: {
+            set(value) {
+                return value
+            },
+            get() {
+                var parms = String(this.gridNodes.firstVisitDate).split('.')
+                var postDate = new Date(parms[2], parms[1] - 1, parseInt(parms[0]));
+                console.log(postDate)
+                return postDate
+            }
+        },
         ...mapGetters({
             isAddOperation: 'clientsFrame/isAddOperation',
             isEditOperation: 'clientsFrame/isEditOperation',
@@ -83,14 +107,19 @@ export default {
             return {
                 fio: this.gridNodes.fio,
                 phoneNum: this.gridNodes.phoneNum,
-                firstVisitDate: this.gridNodes.firstVisitDate,
                 howToFind: this.gridNodes.howToFind,
                 inviterPhone: this.gridNodes.inviterPhone,
-                note: this.gridNodes.note
+                note: this.gridNodes.note,
+                firstVisitDate: this.gridNodes.firstVisitDate
             }
         }
     },
     methods: {
+        datePicked(date) {
+            var mnth = ("0" + (date.getMonth() + 1)).slice(-2)
+            var day = ("0" + date.getDate()).slice(-2)
+            this.gridNodes.firstVisitDate =  [day, mnth, date.getFullYear()].join(".")
+        },
         async editClient() {
             if (this.isEditOperation) {
                 var { isCorrect, alertMessage } = validate(this.gridNodes)

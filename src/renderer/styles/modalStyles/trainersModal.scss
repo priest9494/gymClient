@@ -51,20 +51,11 @@
                         background: rgba(178, 34, 34, 0);
                         height: 30px;
                         margin-top: 10px;
-                        
+                        width: 300px;
                         &.bordered {
                             border: 1px solid white;
                             margin-top: 8px;
                         }
-                    }
-        
-                    input {
-                        padding: 0px;
-                        background: rgba(178, 34, 34, 0);
-                        border: none;
-                        color:white;
-                        font-size: 12px;
-                        width: 200px;
                     }
                 }
             }

@@ -25,5 +25,12 @@ export default function(gridNode) {
         isCorrect = false
     }
 
+    if(!gridNode.interestRate) {
+        alertMessage += '• Введите ставку тренера\n'
+        isCorrect = false
+    } else if (gridNode.interestRate > 100 || gridNode.interestRate < 0) {
+        alertMessage += '• Ставка тренера может быть от 0 до 100\n'
+        isCorrect = false
+    }
     return { isCorrect, alertMessage }
 }

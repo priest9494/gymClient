@@ -18,8 +18,18 @@
                             :class="{ 'bordered': isEditable || isAddOperation }"
                             :disabled="!(isEditable || isAddOperation)"
                             v-model="gridNodes[key]"
-                            @click="clientInputClicked(key)"
+                            v-show="!((key === 'paymentDate') && (isAddOperation || isEditable))"
+                            @click="clientInputClicked(key)" 
                         >
+
+                        <div v-show="(isEditable || isAddOperation)" class="date-pick-wrapper">
+                            <date-picker
+                                v-model="pickedDate"
+                                type="date"
+                                @input="datePicked"
+                            />
+                        </div>
+
                         <select class="method-select" v-model="selectedMethod" v-if="isAddOperation">
                             <option>нал</option>
                             <option>б/н</option>
@@ -54,6 +64,9 @@
 
 
 <script>
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
+
 import validate from '../../validation/paymentsValidation'
 import subChooseHelper from './subChooseHelper'
 import confirmModal from './confirmModal'
@@ -61,7 +74,8 @@ import confirmModal from './confirmModal'
 export default {
     components: {
         'sub-choose-helper': subChooseHelper,
-        'confirm-modal': confirmModal
+        'confirm-modal': confirmModal,
+        'date-picker': DatePicker
     },
     props: {
         gridRows: Array,
@@ -74,7 +88,8 @@ export default {
             helperVisible: false,
             choosedSub: {},
             selectedMethod: 'нал',
-            confirmVisible: false
+            confirmVisible: false,
+            pickedDate: new Date()
         }
     },
     computed: {
@@ -86,17 +101,22 @@ export default {
         gridNodesToShow: function() {
             var showObj = {}
             showObj.sub = this.gridNodes.sub
-            showObj.paymentDate = this.gridNodes.paymentDate
             showObj.paymentAmount = this.gridNodes.paymentAmount
-
+            showObj.interestRate = this.gridNodes.interestRate
+            showObj.paymentDate = this.gridNodes.paymentDate
             if(!this.isAddOperation) {
                 showObj.paymentMethod = this.gridNodes.paymentMethod
             }
-            
+
             return showObj
         }
     },
     methods: {
+        datePicked(date) {
+            var mnth = ("0" + (date.getMonth() + 1)).slice(-2)
+            var day = ("0" + date.getDate()).slice(-2)
+            this.gridNodes.paymentDate =  [day, mnth, date.getFullYear()].join(".")
+        },
         subChoosed(sub) {
             this.choosedSub = sub
             this.helperVisible = false
@@ -114,7 +134,6 @@ export default {
         async addPayment() {
             var { isCorrect, alertMessage } = validate(this.gridNodes)
 
-            console.log(this.selectedMethod)
             if(!isCorrect) {
                 alert(alertMessage)
                 return
@@ -127,12 +146,12 @@ export default {
                 alert('Номер абонемента не существует')
                 return
             }
-
             await this.$axios.post('http://localhost:3000/v1/payments/add', {
                 sub_number: this.choosedSub.subNumber,
                 payment_date: this.gridNodes.paymentDate,
                 payment_amount: this.gridNodes.paymentAmount,
-                payment_method: this.selectedMethod
+                payment_method: this.selectedMethod,
+                interest_rate: this.gridNodes.interestRate
             })
 
             this.$emit('modalClose')

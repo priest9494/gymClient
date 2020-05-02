@@ -16,11 +16,21 @@
                             v-for="(value, key) in gridNodesToShow"
                             :key="key"
                             type="text"
-                            :class="{ 'bordered': isEditOperation || isAddOperation }"
-                            :disabled="!(isEditOperation || isAddOperation)"
+                            :class="{ 
+                                'bordered': (isEditOperation || isAddOperation) && key !== 'begDate' && key !== 'endDate' && key !== 'payLeft',
+                                'disabled-border': (isEditOperation || isAddOperation) && (key === 'begDate' || key === 'endDate' || key === 'payLeft' || key === 'trainLeft')
+                            }"
+                            :disabled="!(isEditOperation || isAddOperation) || key === 'begDate' || key === 'endDate' || key === 'payLeft' || key === 'trainLeft'"
                             v-model="gridNodes[key]"
                             @click="inputClicked(key)"
-                        >
+                        />
+                        <div v-show="isAddOperation" class="date-pick-wrapper">
+                            <date-picker
+                                range
+                                v-model="pickedDate"
+                                @input="datePicked"
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -63,6 +73,9 @@
 </template>
 
 <script>
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
+
 import confirmModal from './confirmModal'
 import helperModal from './addSubHelperModal'
 import extendModal from './extendSubModal'
@@ -76,7 +89,8 @@ export default {
     components: {
         confirmModal,
         helperModal,
-        'extend-modal': extendModal
+        'extend-modal': extendModal,
+        'date-picker': DatePicker
     },
     props: {
         gridRows: Array,
@@ -95,10 +109,20 @@ export default {
                 trainerId: '',
                 typeId: ''
             },
-            extendVisible: false
+            extendVisible: false,
+            pickedDate: ''
         }
     },
     methods: {
+        datePicked(date) {
+            var mnth = ("0" + (this.pickedDate[0].getMonth() + 1)).slice(-2)
+            var day = ("0" + this.pickedDate[0].getDate()).slice(-2)
+            this.gridNodes.begDate = [day, mnth, this.pickedDate[0].getFullYear()].join(".")
+
+            var mnth = ("0" + (this.pickedDate[1].getMonth() + 1)).slice(-2)
+            var day = ("0" + this.pickedDate[1].getDate()).slice(-2)
+            this.gridNodes.endDate = [day, mnth, this.pickedDate[1].getFullYear()].join(".")
+        },
         rowChoosed(choosedNode) {
             this.helperVisible = false
             if(this.currentOptionKey === 'clients') {
@@ -261,11 +285,11 @@ export default {
         gridRowsToShow: function() {
             if(this.isAddOperation) {
                 return this.gridRows.filter(function(item) {
-                    return item !== 'id' && item !== 'Осталось занятий' && item !== 'Осталось оплатить'
+                    return item !== 'id' && item !== 'Осталось занятий' && item !== 'Осталось оплатить' && item !== 'Дата начала' && item !== 'Дата окончания'
                 })
             } else {
                 return this.gridRows.filter(function(item) {
-                    return item !== 'id'
+                    return item !== 'id' && item !== 'Дата'
                 })
             }
         },
@@ -276,8 +300,6 @@ export default {
             node.client = this.gridNodes.client
             node.type = this.gridNodes.type
             node.trainer = this.gridNodes.trainer
-            node.begDate = this.gridNodes.begDate
-            node.endDate = this.gridNodes.endDate
             node.begTime = this.gridNodes.begTime
             
             if(!this.isAddOperation) {
@@ -286,7 +308,11 @@ export default {
             }
 
             node.note = this.gridNodes.note
-
+            
+            if(!this.isAddOperation) {
+                node.begDate = this.gridNodes.begDate
+                node.endDate = this.gridNodes.endDate
+            }
             return node
         }
     }

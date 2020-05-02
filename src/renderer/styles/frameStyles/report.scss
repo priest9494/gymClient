@@ -14,24 +14,6 @@
             flex-direction: row;
             justify-content: center;
             
-
-            div {
-                display: flex;
-                margin: 0 5px;
-                align-items: center;
-                padding: 5px 0 5px 5px;
-            }
-
-            input {
-                background: #2f3136;
-                border: 1px solid rgb(150, 148, 148);
-                color: white;
-                padding: 5px 0 5px 2px;
-
-                &:disabled {
-                    color: #969696;
-                }
-            }
             select {
                 background: #2f3136;
                 color: white;

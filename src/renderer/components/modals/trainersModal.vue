@@ -18,7 +18,15 @@
                             :class="{ 'bordered': isEditable || isAddOperation }"
                             :disabled="!(isEditable || isAddOperation)"
                             v-model="gridNodes[key]"
+                            v-show="!((key === 'dateBirth') && (isAddOperation || isEditable))"
                         >
+                        <div v-show="(isEditable || isAddOperation)" class="date-pick-wrapper">
+                            <date-picker
+                                v-model="pickedDate"
+                                type="date"
+                                @input="datePicked"
+                            />
+                        </div>
                     </div>
                 </div>
                 <div class="edit-button-wrapper" v-if="!isAddOperation">
@@ -41,12 +49,16 @@
 
 
 <script>
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
+
 import validate from '../../validation/trainerValidation'
 import confirmModal from './confirmModal'
 
 export default {
     components: {
-        'confirm-modal': confirmModal
+        'confirm-modal': confirmModal,
+        'date-picker': DatePicker
     },
     name: 'get-full-info-modal',
     props: {
@@ -61,6 +73,17 @@ export default {
         }
     },
     computed: {
+        pickedDate: {
+            set(value) {
+                return value
+            },
+            get() {
+                var parms = String(this.gridNodes.dateBirth).split('.')
+                var postDate = new Date(parms[2], parms[1] - 1, parseInt(parms[0]));
+                console.log(postDate)
+                return postDate
+            }
+        },
         gridRowsToShow: function() {
             return this.gridRows.filter(function(item) {
                 return item !== 'id'
@@ -74,6 +97,11 @@ export default {
         }
     },
     methods: {
+        datePicked(date) {
+            var mnth = ("0" + (date.getMonth() + 1)).slice(-2)
+            var day = ("0" + date.getDate()).slice(-2)
+            this.gridNodes.dateBirth =  [day, mnth, date.getFullYear()].join(".")
+        },
         async editTrainer() {
             if (this.isEditable) {
                 var { isCorrect, alertMessage } = validate(this.gridNodes)

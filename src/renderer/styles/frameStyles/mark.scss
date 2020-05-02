@@ -2,6 +2,12 @@
 @import '../buttons.scss';
 @import '../searchPanel.scss';
 
+.main-frame {
+    ::-webkit-scrollbar {
+        height: 5px;
+    }
+}
+
 .search-container {
     margin-top: 25px;
 }

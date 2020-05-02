@@ -3,14 +3,14 @@
 
 .main-shadow {
 
-    .main-form {
+    .main-form { 
         top: 25%;
-        left: 10%;
-        right: 10%;
+        left: 15%;
+        right: 15%;
 
         .main-modal {
             position: relative;
-
+            padding: 0;
             .close-button {
                 position: absolute;
                 cursor: pointer;

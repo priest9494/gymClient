@@ -1,37 +1,42 @@
 <template>
-    <div class="extend-frame">
-        <div class="close" @click="$emit('extendClose')">x</div>
-        <div class="lines-wrapper">
-            <div class="labels-wrapper">
-                <div>Дата начала</div>
-                <div>Дата окончания</div>
+    <div class="main-shadow">
+        <div class="extend-frame">
+            <div class="close" @click="$emit('extendClose')">x</div>
+            <div class="lines-wrapper">
+                <div>Выберите диапазон дат</div>
+                <div class="user-input-wrapper">
+                    <date-picker
+                        v-model="pickedDate"
+                        range
+                        @input="datePicked"
+                    />
+                </div>
             </div>
-            <div class="user-input-wrapper">
-                <input type="text" :value="begDateUpdated" @input="bDate = $event.target.value">
-                <input type="text" :value="endDateUpdated" @input="eDate = $event.target.value">
+            <div class="button-wrapper">
+                <button class="extend-type-button" @click="acceptClicked">
+                    Применить
+                </button>
             </div>
+            <confirm-modal
+                v-show="confirmVisible"
+                @agreeClose="accept"
+                @disagreeClose="confirmVisible = false"
+                v-bind:questionString="'Продлить абонемент?'"
+            />
         </div>
-        <div class="button-wrapper">
-            <button class=".accept-type-button" @click="acceptClicked">
-                Применить
-            </button>
-        </div>
-        <confirm-modal
-            v-show="confirmVisible"
-            @agreeClose="accept"
-            @disagreeClose="confirmVisible = false"
-            v-bind:questionString="'Продлить абонемент?'"
-        />
     </div>
 </template>
 
 <script>
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
+
 import confirmModal from './confirmModal'
-import validate from '../../validation/extendSubValidation'
 
 export default {
     components: {
-        'confirm-modal': confirmModal
+        'confirm-modal': confirmModal,
+        'date-picker': DatePicker
     },
     props: {
         begDate: String,
@@ -42,45 +47,26 @@ export default {
             bDate: '',
             eDate: '',
             confirmVisible: false,
-            begValidated: '',
-            endValidated: ''
-        }
-        
-    },
-    computed: {
-        begDateUpdated() {
-            return this.endDate
-        },
-        endDateUpdated() {
-            if(this.begDate) {
-                var begSplit = this.begDate.split('.')
-                var endSplit = this.endDate.split('.')
-
-                var bd = new Date(begSplit[2], begSplit[1] - 1, begSplit[0]).getTime()
-                var ed = new Date(endSplit[2], endSplit[1] - 1, endSplit[0]).getTime()
-
-                var newDate = new Date(ed + ed - bd)
-                var mnth = ("0" + (newDate.getMonth() + 1)).slice(-2)
-                var day = ("0" + newDate.getDate()).slice(-2)
-                return [day, mnth, newDate.getFullYear()].join(".")
-            }
-            return ''
+            pickedDate: ''
         }
     },
     methods: {
+        datePicked() {
+            var mnth = ("0" + (this.pickedDate[0].getMonth() + 1)).slice(-2)
+            var day = ("0" + this.pickedDate[0].getDate()).slice(-2)
+            this.bDate = [day, mnth, this.pickedDate[0].getFullYear()].join(".")
+
+            var mnth = ("0" + (this.pickedDate[1].getMonth() + 1)).slice(-2)
+            var day = ("0" + this.pickedDate[1].getDate()).slice(-2)
+            this.eDate = [day, mnth, this.pickedDate[1].getFullYear()].join(".")
+
+            console.log(this.bDate, this.eDate)
+        },
         acceptClicked() {
-            var validationResult = validate(this.bDate, this.eDate, this.begDateUpdated, this.endDateUpdated)
-            
-            if(!validationResult.isCorrect) {
-                alert(validationResult.alertMessage)
-                return
-            }
-            this.begValidated = validationResult.begDateToValidate
-            this.endValidated = validationResult.endDateToValidate
             this.confirmVisible = true
         },
         accept() {
-            this.$emit('extendConfirmed', this.begValidated, this.endValidated)
+            this.$emit('extendConfirmed', this.bDate, this.eDate)
             this.confirmVisible = false
         }
     }

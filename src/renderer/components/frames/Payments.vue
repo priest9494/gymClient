@@ -58,8 +58,9 @@ export default {
                 'ФИО',
                 'Абонемент',
                 'Номер абонемента',
-                'Дата оплаты',
                 'Сумма',
+                'Ставка тренера',
+                'Дата оплаты',
                 'Метод'
             ],
             paymentsList: [],
@@ -106,8 +107,9 @@ export default {
                     fio: element.fio,
                     paymentDate: convert(element.payment_date),
                     paymentAmount: element.payment_amount,
+                    interestRate: element.interest_rate,
                     paymentMethod: element.payment_method,
-                    sub: element.sub_number + ' ' + element.fio
+                    sub: element.sub_number + ' ' + element.fio,
                 })
             });
 
@@ -128,6 +130,7 @@ export default {
                 fio: '',
                 paymentDate: convert(new Date()),
                 paymentAmount: '',
+                interestRate: '40',
                 paymentMethod: ''
             }
         }
@@ -135,7 +138,7 @@ export default {
     computed: {
         gridColumnsToShow: function() {
             return this.gridColumns.filter(function(item) {
-                return item !== 'id' && item !=='Дата оплаты' && item !== 'Метод' && item !== 'Абонемент'
+                return item !== 'id' && item !=='Дата оплаты' && item !== 'Метод' && item !== 'Абонемент' && item !== 'Ставка тренера'
             })
         },
         paymentsToShow: function() {
