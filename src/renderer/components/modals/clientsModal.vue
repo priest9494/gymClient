@@ -19,6 +19,7 @@
                             :disabled="!(isEditOperation || isAddOperation)"
                             v-model="gridNodes[key]"
                             v-show="!((key === 'firstVisitDate') && (isAddOperation || isEditOperation))"
+                            @click="inputClicked(key)"
                         >
                         </input>
                         <div v-show="(isEditOperation || isAddOperation)" class="date-pick-wrapper">
@@ -42,6 +43,15 @@
                     <button class="remove-type-button" @click="removeClientClicked">Удалить</button>
                 </div>
 
+                <helper-modal
+                    v-show="helperVisible"
+                    v-bind:helperTitle="'Выберите клиента'"
+                    v-bind:currentOptionKey="'clients'"
+                    :key="searchPanelKey"
+                    @modalClose="helperVisible = false"
+                    @rowChoosed="rowChoosed"
+                />
+
                 <confirm-modal
                     v-show="confirmVisible"
                     @agreeClose="removeClient"
@@ -58,6 +68,7 @@
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
 
+import helperModal from './addSubHelperModal'
 import camera from '../frames/Webcam'
 import confirmModal from './confirmModal'
 import { mapGetters } from 'vuex'
@@ -68,16 +79,18 @@ export default {
     components: {
         camera,
         'confirm-modal': confirmModal,
-        'date-picker': DatePicker
+        'date-picker': DatePicker,
+        'helper-modal': helperModal
     },
-    name: 'get-full-info-modal',
     props: {
         gridRows: Array,
         gridNodes: Object
     },
     data() {
         return {
-            confirmVisible: false
+            confirmVisible: false,
+            searchPanelKey: 0,
+            helperVisible: false
         }
     },
     computed: {
@@ -108,13 +121,26 @@ export default {
                 fio: this.gridNodes.fio,
                 phoneNum: this.gridNodes.phoneNum,
                 howToFind: this.gridNodes.howToFind,
-                inviterPhone: this.gridNodes.inviterPhone,
+                inviter: this.gridNodes.inviter,
                 note: this.gridNodes.note,
                 firstVisitDate: this.gridNodes.firstVisitDate
             }
         }
     },
     methods: {
+        rowChoosed(choosedNode) {
+            this.gridNodes.inviter = choosedNode.fio
+            this.gridNodes.inviterId = choosedNode.id
+            this.helperVisible = false
+            console.log(this.gridNodes)
+        },
+        inputClicked(key) {
+            this.searchPanelKey += 1
+            
+            if(key === 'inviter') {
+                this.helperVisible = true
+            }
+        },
         datePicked(date) {
             var mnth = ("0" + (date.getMonth() + 1)).slice(-2)
             var day = ("0" + date.getDate()).slice(-2)
@@ -141,7 +167,7 @@ export default {
                     phone: this.gridNodes.phoneNum,
                     first_visit_date: postDate,
                     how_find: this.gridNodes.howToFind,
-                    inv_phone: this.gridNodes.inviterPhone,
+                    inviter_id: this.gridNodes.inviterId,
                     note: this.gridNodes.note,
                     photo: photoSender
                 })
@@ -177,7 +203,7 @@ export default {
                 phone: this.gridNodes.phoneNum,
                 first_visit_date: postDate,
                 how_find: this.gridNodes.howToFind,
-                inv_phone: this.gridNodes.inviterPhone,
+                inviter_id: this.gridNodes.inviterId,
                 note: this.gridNodes.note,
                 photo: this.clientPhoto
             })

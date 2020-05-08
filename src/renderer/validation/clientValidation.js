@@ -19,12 +19,7 @@ export default function(gridNode) {
         alertMessage += '• Слишком длинный номер телефона\n'
         isCorrect = false
     }
-
-    if(gridNode.inviterPhone.length > 18) {
-        alertMessage += '• Слишком длинный номер телефона пригласившего\n'
-        isCorrect = false
-    }
-
+    
     if(gridNode.howToFind.length > 16) {
         alertMessage += "• Слишком длинный пункт 'Откуда узнали' \n"
         isCorrect = false

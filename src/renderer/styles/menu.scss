@@ -47,6 +47,19 @@
   .menu-main a:hover:before, .menu-main .current:before {left: 0;}
   .menu-main a:hover:after, .menu-main .current:after {right: 0;}
 
+  .settings {
+    cursor: pointer;
+    position: absolute;
+    top: 3%;
+    right: 2%;
+    z-index: 100;
+  }
+
+  .settings img {
+    height: 30px;
+    width: 30px;
+  }
+
   @media (max-width: 550px) {
   .menu-main {padding-top: 0;}
   .menu-main li {display: block;}

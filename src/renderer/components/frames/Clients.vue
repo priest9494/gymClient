@@ -64,7 +64,7 @@ export default {
                 "ФИО",
                 "Номер телефона",
                 "Откуда узнали",
-                "Телефон пригласившего",
+                "Кто пригласил",
                 "Примечание",
                 "Дата первого визита"
             ],
@@ -116,7 +116,8 @@ export default {
                 phoneNum: '',
                 firstVisitDate: convert(new Date()),
                 howToFind: '',
-                inviterPhone: '',
+                inviter: '',
+                inviterId: '',
                 note: ''
             }
         },
@@ -168,24 +169,14 @@ export default {
                     phoneNum: element.phone_number,
                     firstVisitDate: convert(element.first_visit_date),
                     howToFind: element.how_to_find,
-                    inviterPhone: element.inviter_phone,
+                    inviter: element.inviter,
+                    inviterId: element.inviter_id,
                     note: element.note,
                     photo: element.photo
                 })
             });
             
             this.clientList = this.clientList.reverse()
-            this.clientList.forEach(element => {
-                if(element.inviterPhone == null) {
-                    element.inviterPhone = 'не указано'
-                }
-                if(element.note == null) {
-                    element.note = 'не указано'
-                }
-                if(element.howToFind  == null) {
-                    element.howToFind  = 'не указано'
-                }
-            });
         },
         modalClose() {
             this.modalShow = false

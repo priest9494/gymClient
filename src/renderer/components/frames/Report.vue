@@ -152,12 +152,13 @@ export default {
             }
             
             res.data.forEach(element => {
+                let timeToShow = element.visit_time.split(':')
                 this.visitList.push({
                     id: element.id,
                     fio: element.fio,
                     subNumber: element.sub_number,
                     visitDate: convert(element.visit_date),
-                    visitTime: element.visit_time
+                    visitTime: timeToShow[0] + ':' + timeToShow[1]
                 })
             });
 

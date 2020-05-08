@@ -83,6 +83,7 @@ export default {
             if(!res.data.dbAnswer) {
                 return
             }
+            
             var timeToShow = res.data.dbAnswer.start_time.split(':');
             this.markBtnEnable = true
 
@@ -98,10 +99,8 @@ export default {
 
             let ratio = (window.innerHeight < window.innerWidth) ? 16/9 : 9/16
             const canvas = document.querySelector('canvas')
-
             canvas.width = (window.innerHeight < 1280) ? window.innerWidth : 1280
             canvas.height = window.innerWidth / ratio
-
             var ctx = canvas.getContext("2d");
             var data =  "data:image/png;base64," + res.data.photo
 
