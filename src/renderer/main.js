@@ -9,6 +9,8 @@ if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
 
+router.replace({name: 'mark', path: '/mark'})
+
 /* eslint-disable no-new */
 new Vue({
   components: { App },
