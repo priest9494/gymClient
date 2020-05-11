@@ -39,6 +39,11 @@ export default new Router({
       path: '/subTypes',
       name: 'subTypes',
       component: require('@/components/frames/SubTypes').default
+    },
+    {
+      path: '/saleReport',
+      name: 'subTypes',
+      component: require('@/components/frames/SaleReport').default
     }
   ]
 })

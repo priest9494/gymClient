@@ -41,7 +41,9 @@
             </div>
         </div>
         <div class="report-button-wrapper">
-            <button class="report-type-button">Отчет "Начисления при продаже"</button>
+            <router-link to="/saleReport">
+                <button class="report-type-button">Отчет "Начисления при продаже"</button>
+            </router-link>
         </div>
 
     </div>
@@ -133,18 +135,18 @@ export default {
             }
             
             if(!this.userInput) {
-               res = await this.$axios.post('http://localhost:3000/v1/visits/getLatest', {
+               res = await this.$axios.post('https://localhost:3000/v1/visits/getLatest', {
                    beg_range: this.begSearchDate,
                    end_range: this.endSearchDate
                })
             } else if (this.searchCriterion === 'Номер абонемента'){
-                res = await this.$axios.post('http://localhost:3000/v1/visits/getBySubNumber', {
+                res = await this.$axios.post('https://localhost:3000/v1/visits/getBySubNumber', {
                     sub_number: this.userInput,
                     beg_range: this.begSearchDate,
                     end_range: this.endSearchDate
                 })
             } else {
-                res = await this.$axios.post('http://localhost:3000/v1/visits/getByFio', {
+                res = await this.$axios.post('https://localhost:3000/v1/visits/getByFio', {
                     fio: this.userInput,
                     beg_range: this.begSearchDate,
                     end_range: this.endSearchDate

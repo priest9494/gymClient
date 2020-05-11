@@ -76,7 +76,7 @@ export default {
             this.gridNodes = {}
             this.clientPhotoShowed = false
             
-            const res = await this.$axios.post('http://localhost:3000/v1/mark/getInfo', {
+            const res = await this.$axios.post('https://localhost:3000/v1/mark/getInfo', {
                 sub_number: this.subNumber
             })
 
@@ -112,7 +112,7 @@ export default {
             this.clientPhotoShowed = true
         },
         async markVisit() { 
-            await this.$axios.post('http://localhost:3000/v1/mark/markVisit', {
+            await this.$axios.post('https://localhost:3000/v1/mark/markVisit', {
                 id: this.subId
             })
         },

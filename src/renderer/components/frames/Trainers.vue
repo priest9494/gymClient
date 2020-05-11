@@ -99,9 +99,9 @@ export default {
             let res
             this.trainersList = [];
             if(!this.userInput) {
-                res = await this.$axios.get('http://localhost:3000/v1/trainers/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/trainers/getLatest')
             } else {
-                res = await this.$axios.post('http://localhost:3000/v1/trainers/findByFio', {
+                res = await this.$axios.post('https://localhost:3000/v1/trainers/findByFio', {
                     fio: this.userInput
                 })
             }

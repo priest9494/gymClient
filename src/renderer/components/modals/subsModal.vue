@@ -165,7 +165,7 @@ export default {
 
                 // Если при изменении абонемента номер абонемента не был изменен, проверять уникальность не требуется
                 if(this.gridNodes.subNumber != this.receivedSubNumber) {
-                    let res = await this.$axios.post('http://localhost:3000/v1/subs/checkUniq', {
+                    let res = await this.$axios.post('https://localhost:3000/v1/subs/checkUniq', {
                         sub_number: this.gridNodes.subNumber
                     })
 
@@ -190,7 +190,7 @@ export default {
                 var trainerIdToSend = this.choosedId.trainerId ? this.choosedId.trainerId : this.gridNodes.trainerId
                 var typeIdToSend = this.choosedId.typeId ? this.choosedId.typeId : this.gridNodes.typeId
                 
-                await this.$axios.post('http://localhost:3000/v1/subs/edit', {
+                await this.$axios.post('https://localhost:3000/v1/subs/edit', {
                     id: this.gridNodes.subId,
                     sub_number: this.gridNodes.subNumber,
                     type_id: typeIdToSend,
@@ -213,7 +213,7 @@ export default {
             this.confirmVisible = true
         },
         async removeSub() {
-            await this.$axios.get('http://localhost:3000/v1/subs/remove/' + this.gridNodes.subId)
+            await this.$axios.get('https://localhost:3000/v1/subs/remove/' + this.gridNodes.subId)
             this.confirmVisible = false
             this.$emit('modalClose')
         },
@@ -221,7 +221,7 @@ export default {
             this.extendVisible = true
         },
         async extendConfirmed(begDateReplacement, endDateReplacement) {
-            await this.$axios.post('http://localhost:3000/v1/subs/extend', {
+            await this.$axios.post('https://localhost:3000/v1/subs/extend', {
                 id: this.gridNodes.subId,
                 beg_date: begDateReplacement,
                 end_date: endDateReplacement
@@ -236,7 +236,7 @@ export default {
         async addSub() {
             var { isCorrect, alertMessage } = await validate(this.gridNodes, this.isEditOperation)
             
-            let res = await this.$axios.post('http://localhost:3000/v1/subs/checkUniq', {
+            let res = await this.$axios.post('https://localhost:3000/v1/subs/checkUniq', {
                 sub_number: this.gridNodes.subNumber
             })
 
@@ -256,7 +256,7 @@ export default {
             var begDateToSend = new Date(begSplit[2], begSplit[1] - 1, parseInt(begSplit[0]) + 1);
             var endDateToSend = new Date(endSplit[2], endSplit[1] - 1, parseInt(endSplit[0]) + 1);
 
-            await this.$axios.post('http://localhost:3000/v1/subs/add', {
+            await this.$axios.post('https://localhost:3000/v1/subs/add', {
                 sub_number: this.gridNodes.subNumber,
                 type_id: this.choosedId.typeId,
                 client_id: this.choosedId.clientId,

@@ -84,11 +84,11 @@ export default {
             this.subTypesList = [];
 
             if(this.userInput) {
-                res = await this.$axios.post('http://localhost:3000/v1/types/findByTitle', {
+                res = await this.$axios.post('https://localhost:3000/v1/types/findByTitle', {
                     title: this.userInput
                 })
             } else {
-                res = await this.$axios.get('http://localhost:3000/v1/types/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/types/getLatest')
             }
             
             res.data.forEach(element => {

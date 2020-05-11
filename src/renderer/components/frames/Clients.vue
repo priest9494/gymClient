@@ -151,15 +151,15 @@ export default {
             this.clientList = []
 
             if(this.searchCriterion === 'ФИО' && this.userInput) {
-                res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByFio', {
+                res = await this.$axios.post('https://localhost:3000/v1/clients/getClientByFio', {
                     fio: this.userInput
                 })
             } else if(this.userInput){
-                res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByPhoneNumber', {
+                res = await this.$axios.post('https://localhost:3000/v1/clients/getClientByPhoneNumber', {
                     phone_number: this.userInput
                 })
             } else {
-                res = await this.$axios.get('http://localhost:3000/v1/clients/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/clients/getLatest')
             }
 
             res.data.forEach(element => {

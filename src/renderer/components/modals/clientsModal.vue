@@ -161,7 +161,7 @@ export default {
                 // Отправляем пустую строку заместо фото, чтобы повторно не пересылать полученное фото
                 var photoSender = this.clientPhoto ? this.clientPhoto : ''
 
-                await this.$axios.post('http://localhost:3000/v1/clients/edit', {
+                await this.$axios.post('https://localhost:3000/v1/clients/edit', {
                     id: this.gridNodes.id,
                     fio: this.gridNodes.fio,
                     phone: this.gridNodes.phoneNum,
@@ -198,7 +198,7 @@ export default {
             var parms = this.gridNodes.firstVisitDate.split(/[./-]/);
             var postDate = new Date(parms[2], parms[1] - 1, parseInt(parms[0]) + 1);
 
-            await this.$axios.post('http://localhost:3000/v1/clients/add', {
+            await this.$axios.post('https://localhost:3000/v1/clients/add', {
                 fio: this.gridNodes.fio,
                 phone: this.gridNodes.phoneNum,
                 first_visit_date: postDate,
@@ -216,7 +216,7 @@ export default {
         },
         async removeClient() {
             this.confirmVisible = false
-            await this.$axios.get('http://localhost:3000/v1/clients/remove/' + this.gridNodes.id)
+            await this.$axios.get('https://localhost:3000/v1/clients/remove/' + this.gridNodes.id)
             this.$emit('modalClose')
         },
     }

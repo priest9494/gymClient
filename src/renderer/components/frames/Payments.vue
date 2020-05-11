@@ -43,6 +43,8 @@ import paymentsModal from '../modals/paymentsModal'
 import searchPanel from '../other/searchPanel'
 import convert from '../../util/dateConvert'
 
+import logFileAccess from '../../util/logFileAccess'
+
 export default {
     components: {
         'payments-modal': paymentsModal,
@@ -89,13 +91,13 @@ export default {
             let res
             this.paymentsList = [];
             if(!this.userInput) {
-                res = await this.$axios.get('http://localhost:3000/v1/payments/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/payments/getLatest')
             } else if(this.userInput && this.searchCriterion === 'Номер абонемента') {
-                res = await this.$axios.post('http://localhost:3000/v1/payments/findBySubNumber', {
+                res = await this.$axios.post('https://localhost:3000/v1/payments/findBySubNumber', {
                     sub_number: this.userInput
                 })
             } else {
-                res = await this.$axios.post('http://localhost:3000/v1/payments/findByFio', {
+                res = await this.$axios.post('https://localhost:3000/v1/payments/findByFio', {
                     fio: this.userInput
                 })
             }
@@ -123,6 +125,8 @@ export default {
         addPayment() {
             this.modalShow = true
             this.isAddOperation = true
+            let logRate = logFileAccess('read').rate
+
             this.modalInfo = {
                 id: '',
                 sub: '',
@@ -130,7 +134,7 @@ export default {
                 fio: '',
                 paymentDate: convert(new Date()),
                 paymentAmount: '',
-                interestRate: '40',
+                interestRate: logRate,
                 paymentMethod: ''
             }
         }

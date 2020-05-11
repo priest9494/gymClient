@@ -59,7 +59,27 @@
     height: 30px;
     width: 30px;
   }
+  .settings img.rot:hover {
+    animation: 1s linear 0s normal none infinite running rot;
+    -webkit-animation: 1s linear 0s normal none infinite running rot;
+  }
 
+  @keyframes rot {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(90deg);
+    }
+  }
+  @-webkit-keyframes rot {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(90deg);
+    }
+  }
   @media (max-width: 550px) {
   .menu-main {padding-top: 0;}
   .menu-main li {display: block;}

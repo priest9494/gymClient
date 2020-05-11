@@ -89,7 +89,7 @@ export default {
                     return
                 }
 
-                await this.$axios.post('http://localhost:3000/v1/types/edit', {
+                await this.$axios.post('https://localhost:3000/v1/types/edit', {
                     id: this.gridNodes.id,
                     title: this.gridNodes.title,
                     cost: this.gridNodes.cost,
@@ -109,7 +109,7 @@ export default {
                 return
             }
 
-            await this.$axios.post('http://localhost:3000/v1/types/add', {
+            await this.$axios.post('https://localhost:3000/v1/types/add', {
                 title: this.gridNodes.title,
                 cost: this.gridNodes.cost,
                 training: this.gridNodes.training
@@ -120,7 +120,7 @@ export default {
         async removeSubType() {
             this.confirmVisible = false
             
-            await this.$axios.get('http://localhost:3000/v1/types/remove/' + this.gridNodes.id)
+            await this.$axios.get('https://localhost:3000/v1/types/remove/' + this.gridNodes.id)
             this.$emit('modalClose')
         }
     }

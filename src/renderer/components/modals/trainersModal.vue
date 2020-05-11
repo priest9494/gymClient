@@ -114,7 +114,7 @@ export default {
                 var parms = this.gridNodes.dateBirth.split(/[./-]/);
                 var postDate = new Date(parms[2], parms[1] - 1, parseInt(parms[0]) + 1);
 
-                await this.$axios.post('http://localhost:3000/v1/trainers/edit', {
+                await this.$axios.post('https://localhost:3000/v1/trainers/edit', {
                     id: this.gridNodes.id,
                     fio: this.gridNodes.fio,
                     bdate: postDate
@@ -130,7 +130,7 @@ export default {
         async removeTrainer() {
             this.confirmVisible = false
             
-            await this.$axios.get('http://localhost:3000/v1/trainers/remove/' + this.gridNodes.id)
+            await this.$axios.get('https://localhost:3000/v1/trainers/remove/' + this.gridNodes.id)
             this.$emit('modalClose')
         },
         async addTrainer() {
@@ -144,7 +144,7 @@ export default {
             var parms = this.gridNodes.dateBirth.split(/[./-]/);
             var postDate = new Date(parms[2], parms[1] - 1, parseInt(parms[0]) + 1);
 
-            await this.$axios.post('http://localhost:3000/v1/trainers/add', {
+            await this.$axios.post('https://localhost:3000/v1/trainers/add', {
                 fio: this.gridNodes.fio,
                 bdate: postDate
             })

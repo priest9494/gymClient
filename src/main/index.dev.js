@@ -20,5 +20,16 @@ require('electron').app.on('ready', () => {
     })
 })
 
+require('electron').app.on('certificate-error', (event, webContents, url, err, certificate, cb) => {
+  if (err) console.error(err)
+
+  if (url) {
+    event.preventDefault()
+    cb(true)
+  } else {
+    cb(false)
+  }
+})
+
 // Require `main` process to boot app
 require('./index')

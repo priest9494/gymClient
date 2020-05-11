@@ -46,7 +46,7 @@
             .dynamic-info-rows {
                 display: flex;
                 flex-direction: column;
-                margin-left: 20px;
+                margin-left: 10px;
             }
             .static-info-rows {
                 div {
@@ -58,12 +58,24 @@
                 }
             }
             .dynamic-info-rows {
-                input {
+                .password-input,
+                .rate-input
+                {
                     margin-top: 10px;
                     border: 1px solid white;
                     background: #2f3136;
                     height: 28px;
                     color: white;
+                    text-align: center;
+                }
+
+                .rate-input {
+                    width: 30%;
+                }
+
+                .password-input {
+                    font-size: 1.4rem;
+                    width: 90%;
                 }
             }
         }

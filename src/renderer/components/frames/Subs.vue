@@ -32,9 +32,7 @@
         </div>
         <div class="goto-sub-types-wrapper">
             <router-link to="/subTypes">
-                <button class="goto-types-type-button">
-                    В раздел "Виды абонементов"
-                </button>
+                <button class="goto-types-type-button">В раздел "Виды абонементов"</button>
             </router-link>
         </div>
         <subModal
@@ -149,17 +147,17 @@ export default {
             this.subList = [];
 
             if(!this.userInput) {
-                res = await this.$axios.get('http://localhost:3000/v1/subs/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/subs/getLatest')
             } else if(this.searchCriterion === 'Номер абонемента') {
-                res = await this.$axios.post('http://localhost:3000/v1/subs/getSubBySubNumber', {
+                res = await this.$axios.post('https://localhost:3000/v1/subs/getSubBySubNumber', {
                     sub_number: this.userInput
                 })
             } else if(this.searchCriterion === 'ФИО') {
-                res = await this.$axios.post('http://localhost:3000/v1/subs/getSubByFio', {
+                res = await this.$axios.post('https://localhost:3000/v1/subs/getSubByFio', {
                     fio: this.userInput
                 })
             } else {
-                res = await this.$axios.post('http://localhost:3000/v1/subs/getSubByPhoneNumber', {
+                res = await this.$axios.post('https://localhost:3000/v1/subs/getSubByPhoneNumber', {
                     phone_number: this.userInput
                 })
             }

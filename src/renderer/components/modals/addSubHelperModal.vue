@@ -144,15 +144,15 @@ export default {
             this.gridNodes = []
 
             if(searchCriterion === 'ФИО' && userInput) {
-                res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByFio', {
+                res = await this.$axios.post('https://localhost:3000/v1/clients/getClientByFio', {
                     fio: userInput
                 })
             } else if(userInput){
-                res = await this.$axios.post('http://localhost:3000/v1/clients/getClientByPhoneNumber', {
+                res = await this.$axios.post('https://localhost:3000/v1/clients/getClientByPhoneNumber', {
                     phone_number: userInput
                 })
             } else {
-                res = await this.$axios.get('http://localhost:3000/v1/clients/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/clients/getLatest')
             }
 
             res.data.forEach(element => {
@@ -175,11 +175,11 @@ export default {
             this.gridNodes = [];
             
             if(userInput) {
-                res = await this.$axios.post('http://localhost:3000/v1/types/findByTitle', {
+                res = await this.$axios.post('https://localhost:3000/v1/types/findByTitle', {
                     title: userInput
                 })
             } else {
-                res = await this.$axios.get('http://localhost:3000/v1/types/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/types/getLatest')
             }
             
             res.data.forEach(element => {
@@ -198,11 +198,11 @@ export default {
             this.gridNodes = [];
 
             if(userInput) {
-                res = await this.$axios.post('http://localhost:3000/v1/trainers/findByFio', {
+                res = await this.$axios.post('https://localhost:3000/v1/trainers/findByFio', {
                     fio: userInput
                 })
             } else {
-                res = await this.$axios.get('http://localhost:3000/v1/trainers/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/trainers/getLatest')
             }
             
             res.data.forEach(element => {

@@ -59,8 +59,8 @@ export default async function(gridNode, isEditOperation) {
         gridNode.begTime = regRes
     }
     // Примечание
-    if(gridNode.note > 200) {
-        alertMessage += '• Слишком длинное примечание (чч:мм)\n'
+    if(gridNode.note.length > 200) {
+        alertMessage += '• Слишком длинное примечание\n'
         isCorrect = false
     }
     

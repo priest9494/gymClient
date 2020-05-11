@@ -87,17 +87,17 @@ export default {
             this.subList = [];
 
             if(!userInput) {
-                res = await this.$axios.get('http://localhost:3000/v1/subs/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/subs/getLatest')
             } else if(searchCriterion === 'Номер абонемента') {
-                res = await this.$axios.post('http://localhost:3000/v1/subs/getSubBySubNumber', {
+                res = await this.$axios.post('https://localhost:3000/v1/subs/getSubBySubNumber', {
                     sub_number: userInput
                 })
             } else if(searchCriterion === 'ФИО') {
-                res = await this.$axios.post('http://localhost:3000/v1/subs/getSubByFio', {
+                res = await this.$axios.post('https://localhost:3000/v1/subs/getSubByFio', {
                     fio: userInput
                 })
             } else {
-                res = await this.$axios.post('http://localhost:3000/v1/subs/getSubByPhoneNumber', {
+                res = await this.$axios.post('https://localhost:3000/v1/subs/getSubByPhoneNumber', {
                     phone_number: userInput
                 })
             }

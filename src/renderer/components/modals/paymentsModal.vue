@@ -139,14 +139,14 @@ export default {
                 return
             }
 
-            let isExists = await this.$axios.post('http://localhost:3000/v1/payments/isExists', {
+            let isExists = await this.$axios.post('https://localhost:3000/v1/payments/isExists', {
                 sub_number: this.choosedSub.subNumber
             })
             if(!isExists.data) {
                 alert('Номер абонемента не существует')
                 return
             }
-            await this.$axios.post('http://localhost:3000/v1/payments/add', {
+            await this.$axios.post('https://localhost:3000/v1/payments/add', {
                 sub_number: this.choosedSub.subNumber,
                 payment_date: this.gridNodes.paymentDate,
                 payment_amount: this.gridNodes.paymentAmount,
@@ -159,7 +159,7 @@ export default {
         async removePayment() {
             this.confirmVisible = false
             
-            await this.$axios.post('http://localhost:3000/v1/payments/remove', {
+            await this.$axios.post('https://localhost:3000/v1/payments/remove', {
                 id: this.gridNodes.id
             })
             this.$emit('modalClose')
