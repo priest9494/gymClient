@@ -141,6 +141,10 @@ export default {
 
             let isExists = await this.$axios.post('https://localhost:3000/v1/payments/isExists', {
                 sub_number: this.choosedSub.subNumber
+            }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
             })
             if(!isExists.data) {
                 alert('Номер абонемента не существует')
@@ -152,6 +156,10 @@ export default {
                 payment_amount: this.gridNodes.paymentAmount,
                 payment_method: this.selectedMethod,
                 interest_rate: this.gridNodes.interestRate
+            }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
             })
 
             this.$emit('modalClose')
@@ -161,6 +169,10 @@ export default {
             
             await this.$axios.post('https://localhost:3000/v1/payments/remove', {
                 id: this.gridNodes.id
+            }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
             })
             this.$emit('modalClose')
         }

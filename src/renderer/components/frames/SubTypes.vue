@@ -86,9 +86,17 @@ export default {
             if(this.userInput) {
                 res = await this.$axios.post('https://localhost:3000/v1/types/findByTitle', {
                     title: this.userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             } else {
-                res = await this.$axios.get('https://localhost:3000/v1/types/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/types/getLatest', {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             }
             
             res.data.forEach(element => {

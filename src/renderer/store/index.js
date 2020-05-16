@@ -80,5 +80,18 @@ export const store = new Vuex.Store({
   modules: {
     clientsFrame: clientsModule,
     subsFrame: subsModule
+  },
+  state: {
+    token: ''
+  },
+  getters: {
+    getToken: state => {
+      return state.token
+    }
+  },
+  mutations: {
+    setToken (state, value) {
+      state.token = value
+    }
   }
 })

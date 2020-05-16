@@ -146,13 +146,25 @@ export default {
             if(searchCriterion === 'ФИО' && userInput) {
                 res = await this.$axios.post('https://localhost:3000/v1/clients/getClientByFio', {
                     fio: userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             } else if(userInput){
                 res = await this.$axios.post('https://localhost:3000/v1/clients/getClientByPhoneNumber', {
                     phone_number: userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             } else {
-                res = await this.$axios.get('https://localhost:3000/v1/clients/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/clients/getLatest', {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             }
 
             res.data.forEach(element => {
@@ -177,9 +189,17 @@ export default {
             if(userInput) {
                 res = await this.$axios.post('https://localhost:3000/v1/types/findByTitle', {
                     title: userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             } else {
-                res = await this.$axios.get('https://localhost:3000/v1/types/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/types/getLatest', {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             }
             
             res.data.forEach(element => {
@@ -200,9 +220,17 @@ export default {
             if(userInput) {
                 res = await this.$axios.post('https://localhost:3000/v1/trainers/findByFio', {
                     fio: userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             } else {
-                res = await this.$axios.get('https://localhost:3000/v1/trainers/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/trainers/getLatest', {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             }
             
             res.data.forEach(element => {

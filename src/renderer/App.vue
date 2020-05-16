@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <auth v-show="authVisible" @authDone="authVisible = false"/>
     <menu-main/>
     <router-view></router-view>
   </div>
@@ -7,10 +8,17 @@
 
 <script>
 import menuMain from './components/other/Menu'
+import auth from './components/other/Auth'
 
 export default {
   components: {
-    'menu-main': menuMain
+    'menu-main': menuMain,
+    auth
+  },
+  data() {
+    return {
+      authVisible: true
+    }
   },
   name: 'main'
 }

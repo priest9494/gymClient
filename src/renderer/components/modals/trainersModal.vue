@@ -118,7 +118,11 @@ export default {
                     id: this.gridNodes.id,
                     fio: this.gridNodes.fio,
                     bdate: postDate
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
 
                 this.$emit('modalClose')
             }
@@ -130,7 +134,11 @@ export default {
         async removeTrainer() {
             this.confirmVisible = false
             
-            await this.$axios.get('https://localhost:3000/v1/trainers/remove/' + this.gridNodes.id)
+            await this.$axios.get('https://localhost:3000/v1/trainers/remove/' + this.gridNodes.id, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             this.$emit('modalClose')
         },
         async addTrainer() {
@@ -147,6 +155,10 @@ export default {
             await this.$axios.post('https://localhost:3000/v1/trainers/add', {
                 fio: this.gridNodes.fio,
                 bdate: postDate
+            }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
             })
 
             this.$emit('modalClose')

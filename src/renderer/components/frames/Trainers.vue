@@ -99,11 +99,19 @@ export default {
             let res
             this.trainersList = [];
             if(!this.userInput) {
-                res = await this.$axios.get('https://localhost:3000/v1/trainers/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/trainers/getLatest', {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             } else {
                 res = await this.$axios.post('https://localhost:3000/v1/trainers/findByFio', {
                     fio: this.userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             }
 
             res.data.forEach(element => {

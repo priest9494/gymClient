@@ -91,15 +91,27 @@ export default {
             let res
             this.paymentsList = [];
             if(!this.userInput) {
-                res = await this.$axios.get('https://localhost:3000/v1/payments/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/payments/getLatest', {
+                    headers: {
+                        Authorization: "Bearer " + this.$store.getters.getToken
+                    }
+                })
             } else if(this.userInput && this.searchCriterion === 'Номер абонемента') {
                 res = await this.$axios.post('https://localhost:3000/v1/payments/findBySubNumber', {
                     sub_number: this.userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             } else {
                 res = await this.$axios.post('https://localhost:3000/v1/payments/findByFio', {
                     fio: this.userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             }
 
             res.data.forEach(element => {

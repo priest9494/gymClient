@@ -138,18 +138,30 @@ export default {
                res = await this.$axios.post('https://localhost:3000/v1/visits/getLatest', {
                    beg_range: this.begSearchDate,
                    end_range: this.endSearchDate
-               })
+               }, {
+                    headers: {
+                        Authorization: "Bearer " + this.$store.getters.getToken
+                    }
+                })
             } else if (this.searchCriterion === 'Номер абонемента'){
                 res = await this.$axios.post('https://localhost:3000/v1/visits/getBySubNumber', {
                     sub_number: this.userInput,
                     beg_range: this.begSearchDate,
                     end_range: this.endSearchDate
+                }, {
+                    headers: {
+                        Authorization: "Bearer " + this.$store.getters.getToken
+                    }
                 })
             } else {
                 res = await this.$axios.post('https://localhost:3000/v1/visits/getByFio', {
                     fio: this.userInput,
                     beg_range: this.begSearchDate,
                     end_range: this.endSearchDate
+                }, {
+                    headers: {
+                        Authorization: "Bearer " + this.$store.getters.getToken
+                    }
                 })
             }
             

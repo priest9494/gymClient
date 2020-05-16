@@ -153,13 +153,25 @@ export default {
             if(this.searchCriterion === 'ФИО' && this.userInput) {
                 res = await this.$axios.post('https://localhost:3000/v1/clients/getClientByFio', {
                     fio: this.userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             } else if(this.userInput){
                 res = await this.$axios.post('https://localhost:3000/v1/clients/getClientByPhoneNumber', {
                     phone_number: this.userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             } else {
-                res = await this.$axios.get('https://localhost:3000/v1/clients/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/clients/getLatest', {
+                    headers: {
+                        Authorization: "Bearer " + this.$store.getters.getToken
+                    }
+                })
             }
 
             res.data.forEach(element => {

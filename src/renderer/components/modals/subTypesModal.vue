@@ -94,7 +94,11 @@ export default {
                     title: this.gridNodes.title,
                     cost: this.gridNodes.cost,
                     training: this.gridNodes.training
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
                 
                 this.$emit('modalClose')
             }
@@ -113,6 +117,10 @@ export default {
                 title: this.gridNodes.title,
                 cost: this.gridNodes.cost,
                 training: this.gridNodes.training
+            }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
             })
 
             this.$emit('modalClose')
@@ -120,7 +128,11 @@ export default {
         async removeSubType() {
             this.confirmVisible = false
             
-            await this.$axios.get('https://localhost:3000/v1/types/remove/' + this.gridNodes.id)
+            await this.$axios.get('https://localhost:3000/v1/types/remove/' + this.gridNodes.id, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             this.$emit('modalClose')
         }
     }

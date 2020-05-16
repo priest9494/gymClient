@@ -129,7 +129,11 @@ export default {
                 return
             }
 
-            let res = await this.$axios.post('https://localhost:3000/v1/report/getReport', sendObj)
+            let res = await this.$axios.post('https://localhost:3000/v1/report/getReport', sendObj, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             res.data.forEach(element => {
                 let timeSplit = element.start_time.split(':')
                 this.totalPayment += parseFloat(element.payment_amount)
@@ -149,7 +153,11 @@ export default {
         }
     },
     async created() {
-        let res = await this.$axios.get('https://localhost:3000/v1/report/getTrainerList')
+        let res = await this.$axios.get('https://localhost:3000/v1/report/getTrainerList' , {
+            headers: {
+                Authorization: "Bearer " + this.$store.getters.getToken
+            }
+        })
 
         this.trainerList = res.data
         this.trainerList.unshift({

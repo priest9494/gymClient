@@ -167,7 +167,11 @@ export default {
                 if(this.gridNodes.subNumber != this.receivedSubNumber) {
                     let res = await this.$axios.post('https://localhost:3000/v1/subs/checkUniq', {
                         sub_number: this.gridNodes.subNumber
-                    })
+                    }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
 
                     if(!res.data) {
                         alertMessage = '• Такой номер абонемента уже существует\n' + alertMessage
@@ -203,7 +207,11 @@ export default {
                     left_to_pay: this.gridNodes.payLeft,
                     note: this.gridNodes.note,
                     old_type: this.gridNodes.oldTypeId
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
 
                 this.$emit('modalClose');
             }
@@ -213,7 +221,11 @@ export default {
             this.confirmVisible = true
         },
         async removeSub() {
-            await this.$axios.get('https://localhost:3000/v1/subs/remove/' + this.gridNodes.subId)
+            await this.$axios.get('https://localhost:3000/v1/subs/remove/' + this.gridNodes.subId, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             this.confirmVisible = false
             this.$emit('modalClose')
         },
@@ -225,6 +237,10 @@ export default {
                 id: this.gridNodes.subId,
                 beg_date: begDateReplacement,
                 end_date: endDateReplacement
+            }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
             })
 
             this.extendVisible = false
@@ -238,6 +254,10 @@ export default {
             
             let res = await this.$axios.post('https://localhost:3000/v1/subs/checkUniq', {
                 sub_number: this.gridNodes.subNumber
+            }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
             })
 
             if(!res.data) {
@@ -265,6 +285,10 @@ export default {
                 end_date: endDateToSend,
                 start_time: this.gridNodes.begTime + ':00',
                 note: this.gridNodes.note
+            }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
             })
 
             this.$store.commit('subsFrame/setIsAddOperation', false)

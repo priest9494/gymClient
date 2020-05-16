@@ -77,7 +77,11 @@ export default {
             this.clientPhotoShowed = false
             
             const res = await this.$axios.post('https://localhost:3000/v1/mark/getInfo', {
-                sub_number: this.subNumber
+                sub_number: this.subNumber,
+            }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
             })
 
             if(!res.data.dbAnswer) {
@@ -114,6 +118,10 @@ export default {
         async markVisit() { 
             await this.$axios.post('https://localhost:3000/v1/mark/markVisit', {
                 id: this.subId
+            }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
             })
         },
         clearInput() {

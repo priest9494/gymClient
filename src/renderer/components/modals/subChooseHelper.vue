@@ -87,19 +87,35 @@ export default {
             this.subList = [];
 
             if(!userInput) {
-                res = await this.$axios.get('https://localhost:3000/v1/subs/getLatest')
+                res = await this.$axios.get('https://localhost:3000/v1/subs/getLatest', {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             } else if(searchCriterion === 'Номер абонемента') {
                 res = await this.$axios.post('https://localhost:3000/v1/subs/getSubBySubNumber', {
                     sub_number: userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             } else if(searchCriterion === 'ФИО') {
                 res = await this.$axios.post('https://localhost:3000/v1/subs/getSubByFio', {
                     fio: userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             } else {
                 res = await this.$axios.post('https://localhost:3000/v1/subs/getSubByPhoneNumber', {
                     phone_number: userInput
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             }
 
             console.log('search executed!')

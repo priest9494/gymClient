@@ -170,7 +170,11 @@ export default {
                     inviter_id: this.gridNodes.inviterId,
                     note: this.gridNodes.note,
                     photo: photoSender
-                })
+                }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
 
                 this.$store.commit('clientsFrame/setIsPictureTaken', false)
                 this.$emit('modalClose');
@@ -206,6 +210,10 @@ export default {
                 inviter_id: this.gridNodes.inviterId,
                 note: this.gridNodes.note,
                 photo: this.clientPhoto
+            }, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
             })
             this.$store.commit('clientsFrame/setIsPictureTaken', false)
 
@@ -216,7 +224,11 @@ export default {
         },
         async removeClient() {
             this.confirmVisible = false
-            await this.$axios.get('https://localhost:3000/v1/clients/remove/' + this.gridNodes.id)
+            await this.$axios.get('https://localhost:3000/v1/clients/remove/' + this.gridNodes.id, {
+                headers: {
+                    Authorization: "Bearer " + this.$store.getters.getToken
+                }
+            })
             this.$emit('modalClose')
         },
     }

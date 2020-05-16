@@ -1,0 +1,64 @@
+@import './buttons.scss';
+
+.auth-frame {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.822);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .auth-wrapper {
+        width: 60%;
+        height: 30%;
+        background: #2f3136;
+        color: white;
+
+        .button-wrapper {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .auth-title {
+            font-size: 1.3rem;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .auth-body {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+
+            .auth-block {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                margin: 0 5px;
+
+                .input-label {
+                    margin-top: 10px;
+                    display: flex;
+                    align-items: center;
+                    height: 30px;
+                    font-size: 1.1rem;
+                    color: white;
+                }
+
+                .user-input {
+                    margin-top: 10px;
+                    background: #2f3136;
+                    border: 1px solid white;
+                    height: 26px;
+                    font-size: 1.2rem;
+                    color: white;
+                }
+            }
+        }
+    }
+}

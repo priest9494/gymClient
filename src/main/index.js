@@ -17,9 +17,9 @@ function createWindow () {
     minWidth: 800,
     minHeight: 600,
     title: 'CHAMPION GYM',
-    webPreferences: {
+    /* webPreferences: {
       devTools: false
-    }
+    } */
   },)
   mainWindow.setMenu(null)
   mainWindow.loadURL(winURL)
